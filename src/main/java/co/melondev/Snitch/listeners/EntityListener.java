@@ -18,7 +18,8 @@ import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.event.player.PlayerUnleashEntityEvent;
-import org.bukkit.inventory.ItemStack;
+
+import java.sql.SQLException;
 
 public class EntityListener {
 
@@ -34,15 +35,19 @@ public class EntityListener {
 
     private void logAction(EnumDefaultPlayer defaultPlayer, Entity entity, Location location, EnumAction action, JsonObject data){
         i.async(()->{
-            SnitchPlayer snitchPlayer = defaultPlayer.getSnitchPlayer();
-            SnitchWorld world = i.getStorage().register(location.getWorld());
-            SnitchPosition position = new SnitchPosition(location);
-            JsonObject d = data;
-            if (d == null){
-                d = new JsonObject();
-                d.add("entity", JsonUtil.jsonify(entity));
+            try {
+                SnitchPlayer snitchPlayer = defaultPlayer.getSnitchPlayer();
+                SnitchWorld world = i.getStorage().register(location.getWorld());
+                SnitchPosition position = new SnitchPosition(location);
+                JsonObject d = data;
+                if (d == null) {
+                    d = new JsonObject();
+                    d.add("entity", JsonUtil.jsonify(entity));
+                }
+                i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
+            } catch (SQLException ex) {
+                ex.printStackTrace();
             }
-            i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
         });
     }
 
@@ -52,15 +57,19 @@ public class EntityListener {
 
     private void logAction(Player player, Entity entity, Location location, EnumAction action, JsonObject data){
         i.async(()->{
-            SnitchPlayer snitchPlayer = i.getStorage().getPlayer(player.getUniqueId());
-            SnitchWorld world = i.getStorage().register(location.getWorld());
-            SnitchPosition position = new SnitchPosition(location);
-            JsonObject d = data;
-            if (d == null){
-                d = new JsonObject();
-                d.add("entity", JsonUtil.jsonify(entity));
+            try {
+                SnitchPlayer snitchPlayer = i.getStorage().getPlayer(player.getUniqueId());
+                SnitchWorld world = i.getStorage().register(location.getWorld());
+                SnitchPosition position = new SnitchPosition(location);
+                JsonObject d = data;
+                if (d == null) {
+                    d = new JsonObject();
+                    d.add("entity", JsonUtil.jsonify(entity));
+                }
+                i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
+            } catch (SQLException ex) {
+                ex.printStackTrace();
             }
-            i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
         });
     }
 
@@ -70,15 +79,19 @@ public class EntityListener {
 
     private void logBlockAction(Player player, Block block, EnumAction action, JsonObject data){
         i.async(()->{
-            SnitchPlayer snitchPlayer = i.getStorage().getPlayer(player.getUniqueId());
-            SnitchWorld world = i.getStorage().register(block.getWorld());
-            SnitchPosition position = new SnitchPosition(block);
-            JsonObject d = data;
-            if (d == null){
-                d = new JsonObject();
-                d.add("block", JsonUtil.jsonify(block));
+            try {
+                SnitchPlayer snitchPlayer = i.getStorage().getPlayer(player.getUniqueId());
+                SnitchWorld world = i.getStorage().register(block.getWorld());
+                SnitchPosition position = new SnitchPosition(block);
+                JsonObject d = data;
+                if (d == null) {
+                    d = new JsonObject();
+                    d.add("block", JsonUtil.jsonify(block));
+                }
+                i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
+            } catch (SQLException ex) {
+                ex.printStackTrace();
             }
-            i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
         });
     }
 

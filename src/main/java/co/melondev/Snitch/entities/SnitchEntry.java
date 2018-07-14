@@ -1,10 +1,13 @@
 package co.melondev.Snitch.entities;
 
+import co.melondev.Snitch.SnitchPlugin;
 import co.melondev.Snitch.enums.EnumAction;
 import co.melondev.Snitch.enums.EnumActionVariables;
-import co.melondev.Snitch.util.ItemUtil;
 import com.google.gson.JsonObject;
-import net.minecraft.server.v1_8_R3.MojangsonParseException;
+import com.google.gson.JsonParser;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class SnitchEntry {
 
@@ -26,6 +29,16 @@ public class SnitchEntry {
         this.data = data;
     }
 
+    public SnitchEntry(ResultSet set) throws SQLException {
+        this.id = set.getInt("id");
+        this.action = EnumAction.getById(set.getInt("action_id"));
+        this.snitchPlayer = SnitchPlugin.getInstance().getStorage().getPlayer(set.getInt("player_id"));
+        this.snitchWorld = SnitchPlugin.getInstance().getStorage().getWorld(set.getInt("world_id"));
+        this.snitchPosition = new SnitchPosition(set);
+        this.timestamp = set.getLong("timestamp");
+        this.data = new JsonParser().parse(set.getString("data")).getAsJsonObject();
+    }
+
     public long getTimestamp() {
         return timestamp;
     }
@@ -37,7 +50,7 @@ public class SnitchEntry {
 
         for(EnumActionVariables var : EnumActionVariables.values()){
             if (data.has(var.getKey())){
-                base = base.replace("%" + var.getKey(), var.getReplacement(data.get(var.getKey()).getAsJsonObject()));
+                base = base.replace("%" + var.getKey(), "§6" + var.getReplacement(data.get(var.getKey()).getAsJsonObject()) + "§7");
             }
         }
 

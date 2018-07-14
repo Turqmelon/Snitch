@@ -8,7 +8,6 @@ import co.melondev.Snitch.enums.EnumAction;
 import co.melondev.Snitch.enums.EnumDefaultPlayer;
 import co.melondev.Snitch.util.JsonUtil;
 import com.google.gson.JsonObject;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -19,18 +18,17 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
-import org.bukkit.event.entity.SheepDyeWoolEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
 public class BlockListener implements Listener {
 
-    private SnitchPlugin i;
     private final List<Material> interactables = Arrays.asList(
             Material.ACACIA_DOOR,
             Material.ACACIA_FENCE_GATE,
@@ -78,6 +76,7 @@ public class BlockListener implements Listener {
             Material.WALL_SIGN,
             Material.WOOD_BUTTON,
             Material.WOOD_DOOR);
+    private SnitchPlugin i;
 
     public BlockListener(SnitchPlugin i) {
         this.i = i;
@@ -89,28 +88,36 @@ public class BlockListener implements Listener {
 
     private void logBlockAction(Player player, Block block, EnumAction action, JsonObject data){
         i.async(()->{
-            SnitchPlayer snitchPlayer = i.getStorage().getPlayer(player.getUniqueId());
-            SnitchWorld world = i.getStorage().register(block.getWorld());
-            SnitchPosition position = new SnitchPosition(block);
-            JsonObject d = data;
-            if (d == null){
-                d = new JsonObject();
-                d.add("block", JsonUtil.jsonify(block));
+            try {
+                SnitchPlayer snitchPlayer = i.getStorage().getPlayer(player.getUniqueId());
+                SnitchWorld world = i.getStorage().register(block.getWorld());
+                SnitchPosition position = new SnitchPosition(block);
+                JsonObject d = data;
+                if (d == null) {
+                    d = new JsonObject();
+                    d.add("block", JsonUtil.jsonify(block));
+                }
+                i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
+            } catch (SQLException ex) {
+                ex.printStackTrace();
             }
-            i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
         });
     }
 
     private void logBlockAction(EnumDefaultPlayer defaultPlayer, Block block, EnumAction action, JsonObject data){
         i.async(()->{
-            SnitchWorld world = i.getStorage().register(block.getWorld());
-            SnitchPosition position = new SnitchPosition(block);
-            JsonObject d = data;
-            if (d == null){
-                d = new JsonObject();
-                d.add("block", JsonUtil.jsonify(block));
+            try {
+                SnitchWorld world = i.getStorage().register(block.getWorld());
+                SnitchPosition position = new SnitchPosition(block);
+                JsonObject d = data;
+                if (d == null) {
+                    d = new JsonObject();
+                    d.add("block", JsonUtil.jsonify(block));
+                }
+                i.getStorage().record(action, defaultPlayer.getSnitchPlayer(), world, position, d, System.currentTimeMillis());
+            } catch (SQLException ex) {
+                ex.printStackTrace();
             }
-            i.getStorage().record(action, defaultPlayer.getSnitchPlayer(), world, position, d, System.currentTimeMillis());
         });
     }
 

@@ -1,8 +1,6 @@
 package co.melondev.Snitch.util;
 
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import org.bukkit.DyeColor;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
