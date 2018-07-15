@@ -14,6 +14,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerShearEntityEvent;
@@ -21,7 +22,7 @@ import org.bukkit.event.player.PlayerUnleashEntityEvent;
 
 import java.sql.SQLException;
 
-public class EntityListener {
+public class EntityListener implements Listener {
 
     private SnitchPlugin i;
 

@@ -3,7 +3,7 @@ package co.melondev.Snitch.enums;
 import co.melondev.Snitch.util.ItemUtil;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.server.v1_8_R3.MojangsonParseException;
+import net.minecraft.server.v1_12_R1.MojangsonParseException;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;

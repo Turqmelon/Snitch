@@ -19,6 +19,7 @@ import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.sql.SQLException;
 import java.util.Set;
 
 public class InventoryListener implements Listener {
@@ -35,15 +36,19 @@ public class InventoryListener implements Listener {
 
     private void logAction(Player player, ItemStack itemStack, Location location, EnumAction action, JsonObject data){
         i.async(()->{
-            SnitchPlayer snitchPlayer = i.getStorage().getPlayer(player.getUniqueId());
-            SnitchWorld world = i.getStorage().register(location.getWorld());
-            SnitchPosition position = new SnitchPosition(location);
-            JsonObject d = data;
-            if (d == null){
-                d = new JsonObject();
-                d.add("item", JsonUtil.jsonify(itemStack));
+            try {
+                SnitchPlayer snitchPlayer = i.getStorage().getPlayer(player.getUniqueId());
+                SnitchWorld world = i.getStorage().register(location.getWorld());
+                SnitchPosition position = new SnitchPosition(location);
+                JsonObject d = data;
+                if (d == null) {
+                    d = new JsonObject();
+                    d.add("item", JsonUtil.jsonify(itemStack));
+                }
+                i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
+            } catch (SQLException ex) {
+                ex.printStackTrace();
             }
-            i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
         });
     }
 

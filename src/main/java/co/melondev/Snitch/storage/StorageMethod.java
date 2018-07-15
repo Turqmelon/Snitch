@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import org.bukkit.World;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.UUID;
 
@@ -15,7 +16,7 @@ public interface StorageMethod {
 
     SnitchWorld register(World world) throws SQLException;
 
-    SnitchPlayer registerPlayer(String playerName, UUID uuid);
+    SnitchPlayer registerPlayer(String playerName, UUID uuid) throws SQLException;
 
     SnitchPlayer getPlayer(UUID uuid) throws SQLException;
 
@@ -25,7 +26,9 @@ public interface StorageMethod {
 
     ImmutableList<SnitchEntry> performLookup(SnitchQuery query) throws SQLException;
 
-    SnitchPlayer getPlayer(int playerID);
+    SnitchPlayer getPlayer(int playerID) throws SQLException;
 
     SnitchWorld getWorld(int worldID);
+
+    void closeConnection() throws IOException;
 }

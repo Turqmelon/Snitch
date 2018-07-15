@@ -41,7 +41,7 @@ public class SnitchCommand implements CommandExecutor {
                         for (EnumSnitchCommand c : EnumSnitchCommand.values()) {
                             if (c.getPermission() == null || sender.hasPermission(c.getPermission())) {
                                 permsForAny = true;
-                                String usage = c.getArguments().length() > 0 ? c.getArguments() + " " : " ";
+                                String usage = c.getArguments().length() > 0 ? " " + c.getArguments() + " " : " ";
                                 sender.sendMessage(MsgUtil.record("/snitch " + String.join("|", c.getCommands())) + usage + "§o" + c.getDescription());
                             }
                         }

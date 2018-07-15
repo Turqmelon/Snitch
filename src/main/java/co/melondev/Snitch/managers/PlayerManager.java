@@ -7,6 +7,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.bukkit.entity.Player;
 
+import java.sql.SQLException;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -17,7 +18,11 @@ public class PlayerManager {
 
     public PlayerManager(SnitchPlugin instance) {
         this.i = instance;
-        this.registerDefaultPlayers();
+        try {
+            this.registerDefaultPlayers();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setSession(Player player, SnitchSession snitchSession) {
@@ -28,7 +33,7 @@ public class PlayerManager {
         return sessionCache.getIfPresent(player.getUniqueId());
     }
 
-    private void registerDefaultPlayers() {
+    private void registerDefaultPlayers() throws SQLException {
         for(EnumDefaultPlayer defaultPlayer : EnumDefaultPlayer.values()){
             i.getStorage().registerPlayer(defaultPlayer.getStorageName(), defaultPlayer.getUuid());
         }

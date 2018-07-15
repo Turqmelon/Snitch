@@ -1,8 +1,10 @@
 package co.melondev.Snitch.entities;
 
+import co.melondev.Snitch.SnitchPlugin;
 import co.melondev.Snitch.enums.EnumAction;
 import co.melondev.Snitch.enums.EnumParam;
 import org.apache.commons.lang.Validate;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
@@ -10,7 +12,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class SnitchQuery {
 
@@ -23,8 +24,38 @@ public class SnitchQuery {
     private double range = -1;
 
     public SnitchQuery() {
-        this.since = System.currentTimeMillis() - TimeUnit.DAYS.toDays(3);
+        this.since = System.currentTimeMillis() - SnitchPlugin.getInstance().getConfiguration().getDefaultTime();
         this.before = System.currentTimeMillis() + 1000;
+    }
+
+    public SnitchQuery since(long time) {
+        this.since = time;
+        return this;
+    }
+
+    public SnitchQuery range(double range) {
+        this.range = range;
+        return this;
+    }
+
+    public SnitchQuery relativeTo(SnitchPosition position) {
+        this.position = position;
+        return this;
+    }
+
+    public SnitchQuery inWorld(World world) throws SQLException {
+        return inWorld(SnitchPlugin.getInstance().getStorage().register(world));
+    }
+
+
+    public SnitchQuery inWorld(SnitchWorld world) {
+        this.world = world;
+        return this;
+    }
+
+    public SnitchQuery before(long time) {
+        this.before = time;
+        return this;
     }
 
     public String getSearchSummary() {
@@ -161,20 +192,22 @@ public class SnitchQuery {
         this.before = before;
     }
 
-    public void addActions(EnumAction... actions){
+    public SnitchQuery addActions(EnumAction... actions) {
         for(EnumAction action : actions){
             if (!getActions().contains(action)){
                 this.actions.add(action);
             }
         }
+        return this;
     }
 
-    public void addPlayers(SnitchPlayer... players){
+    public SnitchQuery addPlayers(SnitchPlayer... players) {
         for(SnitchPlayer pl : players){
             if (!getPlayers().contains(pl)){
                 this.players.add(pl);
             }
         }
+        return this;
     }
 
     public List<SnitchPlayer> getPlayers() {

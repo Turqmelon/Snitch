@@ -42,15 +42,15 @@ public class MsgUtil {
     }
 
     public static String info(String message) {
-        return "§f[Snitch] §e" + message;
+        return "§f§l[Snitch] §e" + message;
     }
 
     public static String success(String message) {
-        return "§f[Snitch] §a" + message;
+        return "§f§l[Snitch] §a" + message;
     }
 
     public static String error(String message) {
-        return "§f[Snitch] §c" + message;
+        return "§f§l[Snitch] §c" + message;
     }
 
 }

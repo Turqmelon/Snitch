@@ -1,14 +1,13 @@
 package co.melondev.Snitch.util;
 
-import co.melondev.MelonCore.util.Reflection;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_12_R1.MojangsonParseException;
+import net.minecraft.server.v1_12_R1.MojangsonParser;
+import net.minecraft.server.v1_12_R1.NBTTagCompound;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.entity.EntityType;
@@ -20,7 +19,8 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffectType;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.bukkit.potion.PotionEffectType.*;
@@ -53,6 +53,16 @@ public class ItemUtil {
         @Override
         public EnchantmentTarget getItemTarget() {
             return EnchantmentTarget.ALL;
+        }
+
+        @Override
+        public boolean isTreasure() {
+            return false;
+        }
+
+        @Override
+        public boolean isCursed() {
+            return false;
         }
 
         @Override
@@ -784,7 +794,7 @@ public class ItemUtil {
         if (json == null)
             return null;
 
-        ItemStack stack = CraftItemStack.asBukkitCopy(net.minecraft.server.v1_8_R3.ItemStack.createStack(MojangsonParser.parse(json)));
+        ItemStack stack = CraftItemStack.asBukkitCopy(new net.minecraft.server.v1_12_R1.ItemStack(MojangsonParser.parse(json)));
         if (unescape) {
             ItemMeta meta = stack.getItemMeta();
 
@@ -802,131 +812,18 @@ public class ItemUtil {
 
         return stack;
     }
-
-
-    /**
-     * Adds an NBTTag to an item
-     *
-     * @param stack   the item to add the tag to
-     * @param tagName the name of this tag
-     * @param tag     the NBT data
-     * @return the itemStack with the new NBT tag
-     */
-    public static ItemStack addTag(ItemStack stack, String tagName, NBTBase tag) {
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = getNMSItemStack(stack);
-
-        NBTTagCompound base = new NBTTagCompound();
-
-        nmsStack.save(base);
-        if (!base.hasKey("tag")) {
-            base.set("tag", new NBTTagCompound());
-        }
-        base.getCompound("tag").set(tagName, tag);
-        nmsStack.c(base);
-
-        stack.setItemMeta(CraftItemStack.getItemMeta(nmsStack));
-        return stack;
-    }
-
-    /**
-     * Adds multiple tags to an item
-     *
-     * @param stack the item to add the tags to
-     * @param tags  A map of tagnames and NBT data to add
-     * @return the itemStack with thr newly added NBT data
-     */
-    public static ItemStack addTags(ItemStack stack, Map<String, NBTBase> tags) {
-        NBTTagCompound base = new NBTTagCompound();
-
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = getNMSItemStack(stack);
-
-        nmsStack.save(base);
-        if (!base.hasKey("tag")) {
-            base.set("tag", new NBTTagCompound());
-        }
-        for (Map.Entry<String, NBTBase> entry : tags.entrySet()) {
-            base.getCompound("tag").set(entry.getKey(), entry.getValue());
-        }
-        nmsStack.c(base);
-
-        stack.setItemMeta(CraftItemStack.getItemMeta(nmsStack));
-        return stack;
-    }
-
     /**
      * Get Mojang's ItemStack from a Bukkit ItemStack
      *
      * @param stack the Bukkit stack
      * @return the mojang stack
      */
-    public static net.minecraft.server.v1_8_R3.ItemStack getNMSItemStack(ItemStack stack) {
+    public static net.minecraft.server.v1_12_R1.ItemStack getNMSItemStack(ItemStack stack) {
         if (!(stack instanceof CraftItemStack)) {
             return CraftItemStack.asNMSCopy(stack);
         }
 
-        return (net.minecraft.server.v1_8_R3.ItemStack) Reflection.getValue(stackHandle, stack);
-    }
-
-    /**
-     * Gets NBT data from an item
-     *
-     * @param stack   the item
-     * @param tagName the tag you want NBT from
-     * @return the NBT data, or NULL if it's not present
-     */
-    public static NBTBase getTag(ItemStack stack, String tagName) {
-        if (stack == null)
-            return null;
-
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = getNMSItemStack(stack);
-
-        if (nmsStack == null)
-            return null;
-
-        if (!nmsStack.hasTag())
-            return null;
-
-        NBTTagCompound base = nmsStack.getTag();
-
-        if (!base.hasKey(tagName))
-            return null;
-        return base.get(tagName);
-
-        /*nmsStack.save(base);
-
-        if (!base.hasKey("tag"))
-            return null;
-        if (!base.getCompound("tag").hasKey(tagName))
-            return null;
-        return base.getCompound("tag").get(tagName);*/
-    }
-
-    /**
-     * Removes an NBT tag from an item
-     *
-     * @param stack   the item to remove the tag from
-     * @param tagName the name of the tag to remove
-     * @return true if the tag was successfully removed
-     */
-    public static boolean removeTag(ItemStack stack, String tagName) {
-        NBTTagCompound base = new NBTTagCompound();
-
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = getNMSItemStack(stack);
-
-        if (nmsStack == null)
-            return false;
-        nmsStack.save(base);
-
-        if (!base.hasKey("tag"))
-            return false;
-        if (!base.getCompound("tag").hasKey(tagName))
-            return false;
-
-        base.getCompound("tag").remove(tagName);
-        nmsStack.c(base);
-        stack.setItemMeta(CraftItemStack.getItemMeta(nmsStack));
-
-        return true;
+        return (net.minecraft.server.v1_12_R1.ItemStack) Reflection.getValue(stackHandle, stack);
     }
 
 }

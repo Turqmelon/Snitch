@@ -1,0 +1,10 @@
+name: Snitch
+author: Melon Development, Inc.
+version: 1.0-ALPHA
+main: co.melondev.Snitch.SnitchPlugin
+description: Block logging and rollback done quickly and intuitively.
+commands:
+  snitch:
+    usage: /snitch
+    description: Access primary plugin controls.
+    aliases: [sn, s]

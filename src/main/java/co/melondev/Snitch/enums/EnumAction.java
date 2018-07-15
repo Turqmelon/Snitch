@@ -1,5 +1,6 @@
 package co.melondev.Snitch.enums;
 
+import co.melondev.Snitch.SnitchPlugin;
 import co.melondev.Snitch.entities.SnitchProcessHandler;
 import co.melondev.Snitch.handlers.BlockCreationHandler;
 import co.melondev.Snitch.handlers.BlockDestructionHandler;
@@ -33,49 +34,49 @@ public enum EnumAction {
     CRAFT_ITEM(15, "craft", "%actor crafted %item", new NoCapabilityHandler()),
     CROP_TRAMPLE(17, "trample", "%actor trampled %block", new BlockDestructionHandler()),
     ENCHANT_ITEM(18, "enchant", "%actor enchanted %item with %enchants", new NoCapabilityHandler()),
-    ENTITY_BREAK(19, "break", "%actor broke %block", processHandler),
-    ENTITY_DYE(20, "dye", "%actor dyed %entity %dye", processHandler),
-    ENTITY_EXPLODE(21, "explode", "%actor exploded", processHandler),
-    ENTITY_FOLLOW(22, "lure", "%actor lured %entity", processHandler),
-    ENTITY_FORMED(23, "form", "%actor formed", processHandler),
-    ENTITY_KILL(24, "kill", "%actor killed %entity", processHandler),
-    ENTITY_LEASH(25, "leash", "%actor leashed %entity", processHandler),
-    ENTITY_SHEAR(26, "shear", "%actor sheared %entity", processHandler),
-    ENTITY_SPAWN(27, "spawn", "%entity spawned from %cause", processHandler),
-    ENTITY_UNLEASH(28, "unleash", "%actor unleashed %entity", processHandler),
-    FIRE_SPREAD(30, "fire", "fire spread to %block", processHandler),
-    FIREWORK_LAUNCH(31, "firework", "%actor launched firework", processHandler),
-    HANGING_PLACE(32, "hang", "%actor hung art", processHandler),
-    HANGING_BREAK(33, "unhang", "%actor knocked down art", processHandler),
-    ITEM_DROP(34, "drop", "%actor dropped %item", processHandler),
-    ITEM_INSERT(35, "insert", "%actor inserted %item", processHandler),
-    ITEM_PICKUP(36, "pickup", "%actor picked up %item", processHandler),
-    ITEM_TAKE(37, "take", "%actor took %item", processHandler),
-    ITEM_ROTATE(38, "rotate", "%actor rotated %item", processHandler),
-    LAVA_FLOW(39, "flow", "lava flowed", processHandler),
-    BLOCK_IGNITE(40, "ignite", "%actor ignited %block", processHandler),
-    LEAF_DECAY(41, "decay", "leaf decayed", processHandler),
-    LIGHTNING(42, "lightning", "lightning struck", processHandler),
-    MUSHROOM_GROW(43, "grow", "%actor grew large mushroom", processHandler),
-    PLAYER_CHAT(44, "chat", "%actor said: %message", processHandler),
-    PLAYER_COMMAND(45, "command", "%actor executed: %message", processHandler),
-    PLAYER_DEATH(46, "death", "%actor died", processHandler),
-    PLAYER_JOIN(47, "join", "%actor joined from %ip", processHandler),
-    PLAYER_QUIT(48, "quit", "%actor left", processHandler),
-    PLAYER_TELEPORT(49, "teleport", "%actor teleported to %location", processHandler),
-    POTION_SPLASH(50, "splash", "%potion splashed", processHandler),
-    SHEEP_EAT(51, "sheep", "sheep ate %block", processHandler),
-    SIGN_CHANGE(52, "sign", "%actor changed sign: %message", processHandler),
-    SPAWNEGG_USE(53, "spawnegg", "%actor used %spawnegg egg", processHandler),
-    TNT_PRIME(54, "tnt", "%actor primed TNT", processHandler),
-    TREE_GROW(55, "grow", "%actor grew tree", processHandler),
-    VEHICLE_BREAK(56, "break", "%actor broke a %vehicle", processHandler),
-    VEHICLE_ENTER(57, "enter", "%actor entered a %vehicle", processHandler),
-    VEHICLE_EXIT(58, "exit", "%actor left a %vehicle", processHandler),
-    VEHICLE_PLACE(59, "place", "%actor placed a %vehicle", processHandler),
-    WATER_FLOW(60, "flow", "water flowed", processHandler),
-    WORLD_EDIT(61, "we", "%actor used worldedit", processHandler),
-    XP_PICKUP(62, "xp", "%actor picked up %xp XP", processHandler);
+    ENTITY_BREAK(19, "break", "%actor broke %block", new NoCapabilityHandler()),
+    ENTITY_DYE(20, "dye", "%actor dyed %entity %dye", new NoCapabilityHandler()),
+    ENTITY_EXPLODE(21, "explode", "%actor exploded", new NoCapabilityHandler()),
+    ENTITY_FOLLOW(22, "lure", "%actor lured %entity", new NoCapabilityHandler()),
+    ENTITY_FORMED(23, "form", "%actor formed", new NoCapabilityHandler()),
+    ENTITY_KILL(24, "kill", "%actor killed %entity", new NoCapabilityHandler()),
+    ENTITY_LEASH(25, "leash", "%actor leashed %entity", new NoCapabilityHandler()),
+    ENTITY_SHEAR(26, "shear", "%actor sheared %entity", new NoCapabilityHandler()),
+    ENTITY_SPAWN(27, "spawn", "%entity spawned from %cause", new NoCapabilityHandler()),
+    ENTITY_UNLEASH(28, "unleash", "%actor unleashed %entity", new NoCapabilityHandler()),
+    FIRE_SPREAD(30, "fire", "fire spread to %block", new NoCapabilityHandler()),
+    FIREWORK_LAUNCH(31, "firework", "%actor launched firework", new NoCapabilityHandler()),
+    HANGING_PLACE(32, "hang", "%actor hung art", new NoCapabilityHandler()),
+    HANGING_BREAK(33, "unhang", "%actor knocked down art", new NoCapabilityHandler()),
+    ITEM_DROP(34, "drop", "%actor dropped %item", new NoCapabilityHandler()),
+    ITEM_INSERT(35, "insert", "%actor inserted %item", new NoCapabilityHandler()),
+    ITEM_PICKUP(36, "pickup", "%actor picked up %item", new NoCapabilityHandler()),
+    ITEM_TAKE(37, "take", "%actor took %item", new NoCapabilityHandler()),
+    ITEM_ROTATE(38, "rotate", "%actor rotated %item", new NoCapabilityHandler()),
+    LAVA_FLOW(39, "flow", "lava flowed", new NoCapabilityHandler()),
+    BLOCK_IGNITE(40, "ignite", "%actor ignited %block", new NoCapabilityHandler()),
+    LEAF_DECAY(41, "decay", "leaf decayed", new NoCapabilityHandler()),
+    LIGHTNING(42, "lightning", "lightning struck", new NoCapabilityHandler()),
+    MUSHROOM_GROW(43, "grow", "%actor grew large mushroom", new NoCapabilityHandler()),
+    PLAYER_CHAT(44, "chat", "%actor said: %message", new NoCapabilityHandler()),
+    PLAYER_COMMAND(45, "command", "%actor executed: %message", new NoCapabilityHandler()),
+    PLAYER_DEATH(46, "death", "%actor died", new NoCapabilityHandler()),
+    PLAYER_JOIN(47, "join", "%actor joined from %ip", new NoCapabilityHandler()),
+    PLAYER_QUIT(48, "quit", "%actor left", new NoCapabilityHandler()),
+    PLAYER_TELEPORT(49, "teleport", "%actor teleported to %location", new NoCapabilityHandler()),
+    POTION_SPLASH(50, "splash", "%potion splashed", new NoCapabilityHandler()),
+    SHEEP_EAT(51, "sheep", "sheep ate %block", new NoCapabilityHandler()),
+    SIGN_CHANGE(52, "sign", "%actor changed sign: %message", new NoCapabilityHandler()),
+    SPAWNEGG_USE(53, "spawnegg", "%actor used %spawnegg egg", new NoCapabilityHandler()),
+    TNT_PRIME(54, "tnt", "%actor primed TNT", new NoCapabilityHandler()),
+    TREE_GROW(55, "grow", "%actor grew tree", new NoCapabilityHandler()),
+    VEHICLE_BREAK(56, "break", "%actor broke a %vehicle", new NoCapabilityHandler()),
+    VEHICLE_ENTER(57, "enter", "%actor entered a %vehicle", new NoCapabilityHandler()),
+    VEHICLE_EXIT(58, "exit", "%actor left a %vehicle", new NoCapabilityHandler()),
+    VEHICLE_PLACE(59, "place", "%actor placed a %vehicle", new NoCapabilityHandler()),
+    WATER_FLOW(60, "flow", "water flowed", new NoCapabilityHandler()),
+    WORLD_EDIT(61, "we", "%actor used worldedit", new NoCapabilityHandler()),
+    XP_PICKUP(62, "xp", "%actor picked up %xp XP", new NoCapabilityHandler());
 
     private static Map<Integer, EnumAction> actionMap = new HashMap<>();
     private int id;
@@ -126,8 +127,7 @@ public enum EnumAction {
     }
 
     public boolean isEnabled(){
-        // TODO config check
-        return true;
+        return !SnitchPlugin.getInstance().getConfiguration().getDisabledLogging().contains(this);
     }
 
     public String getExplained() {

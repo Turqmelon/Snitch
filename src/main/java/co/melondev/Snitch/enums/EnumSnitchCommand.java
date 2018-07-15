@@ -189,8 +189,7 @@ public enum EnumSnitchCommand {
                     }
                 }
 
-                SnitchQuery query = new SnitchQuery();
-                query.setRadius(new SnitchPosition(player.getLocation()), range);
+                SnitchQuery query = new SnitchQuery().range(5).relativeTo(new SnitchPosition(player.getLocation()));
                 query.analyzePermissions(player);
                 List<SnitchEntry> entryList = SnitchPlugin.getInstance().getStorage().performLookup(query);
                 EnumSnitchCommand.getOrCreateSession(player, query, entryList, 1);
