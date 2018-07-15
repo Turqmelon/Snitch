@@ -5,6 +5,7 @@ import co.melondev.Snitch.entities.*;
 import co.melondev.Snitch.util.MsgUtil;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.math.NumberUtils;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -189,7 +190,7 @@ public enum EnumSnitchCommand {
                     }
                 }
 
-                SnitchQuery query = new SnitchQuery().range(5).relativeTo(new SnitchPosition(player.getLocation()));
+                SnitchQuery query = new SnitchQuery().relativeTo(new SnitchPosition(player.getLocation())).inWorld(player.getWorld()).range(range);
                 query.analyzePermissions(player);
                 List<SnitchEntry> entryList = SnitchPlugin.getInstance().getStorage().performLookup(query);
                 EnumSnitchCommand.getOrCreateSession(player, query, entryList, 1);
@@ -197,6 +198,42 @@ public enum EnumSnitchCommand {
 
             } else {
                 sender.sendMessage(MsgUtil.error("You must be a player to use the near command."));
+            }
+        }
+    },
+    TELEPORT(Arrays.asList("teleport", "tp"), "<#>", "Teleport to a log entry", "snitch.teleport") {
+        @Override
+        public void run(CommandSender sender, List<String> args) throws SQLException {
+            if ((sender instanceof Player)) {
+
+                if (args.size() == 1) {
+                    try {
+
+                        int id = Integer.parseInt(args.get(0));
+
+                        SnitchSession session = SnitchPlugin.getInstance().getPlayerManager().getSession((Player) sender);
+                        if (session != null && !session.getEntries().isEmpty()) {
+                            if (id < session.getEntries().size() && id >= 0) {
+                                SnitchEntry entry = session.getEntries().get(id);
+                                Location loc = entry.getSnitchPosition().toLocation(entry.getSnitchWorld().getBukkitWorld());
+                                ((Player) sender).teleport(loc);
+                                sender.sendMessage(MsgUtil.success("Teleported to entry #" + id + ": §7" + entry.getDescriptor()));
+                            } else {
+                                sender.sendMessage(MsgUtil.error("No entry found matching that ID."));
+                            }
+                        } else {
+                            sender.sendMessage(MsgUtil.error("No results to teleport to. Try a lookup command first."));
+                        }
+
+                    } catch (NumberFormatException ex) {
+                        sender.sendMessage(MsgUtil.error("Specify a valid entry ID."));
+                    }
+                } else {
+                    sender.sendMessage(MsgUtil.error("You need to specify an entry ID."));
+                }
+
+            } else {
+                sender.sendMessage(MsgUtil.error("You must be a player to use the teleport command."));
             }
         }
     },

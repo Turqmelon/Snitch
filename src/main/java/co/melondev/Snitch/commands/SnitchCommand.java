@@ -48,7 +48,6 @@ public class SnitchCommand implements CommandExecutor {
                         if (!permsForAny) {
                             sender.sendMessage(MsgUtil.error("You don't have access to any Snitch commands."));
                         }
-                        sender.sendMessage(MsgUtil.record("/snitch page|pg <#> §oChange to a specific page"));
                     } else {
                         EnumSnitchCommand c = EnumSnitchCommand.getByCommand(cmd);
                         if (c != null) {

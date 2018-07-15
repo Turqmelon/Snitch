@@ -67,7 +67,7 @@ public class SnitchQuery {
             for (EnumAction action : this.actions) {
                 names.add(action.getFriendlyFullName());
             }
-            d.append(String.join(", ", names)).append("from ");
+            d.append(String.join(", ", names)).append(" from ");
         }
         if (players.isEmpty()) {
             d.append("all players");
@@ -82,7 +82,7 @@ public class SnitchQuery {
         if (since > 0) {
             d.append(" since ").append(df.format(since));
         }
-        if (before > 0) {
+        if (before > 0 && before < System.currentTimeMillis()) {
             d.append(" before ").append(df.format(before));
         }
 

@@ -58,14 +58,14 @@ public class MySQLStorage implements StorageMethod {
         if (!query.getPlayers().isEmpty()) {
             List<SnitchPlayer> players = query.getPlayers();
             if (players.size() == 1) {
-                conditions.append("player_id = ").append(players.get(0).getId());
+                conditions.append("player_id = '").append(players.get(0).getId()).append("'");
             } else {
                 StringBuilder playerQuery = new StringBuilder("(");
                 for (SnitchPlayer player : players) {
                     if (playerQuery.length() > 1) {
                         playerQuery.append(" OR ");
                     }
-                    playerQuery.append("player_id = ").append(player.getId());
+                    playerQuery.append("player_id = '").append(player.getId()).append("'");
                 }
                 playerQuery.append(")");
                 if (playerQuery.length() > 2) {
@@ -79,14 +79,14 @@ public class MySQLStorage implements StorageMethod {
             }
             List<EnumAction> actions = query.getActions();
             if (actions.size() == 1) {
-                conditions.append("action_id = ").append(actions.get(0).getId());
+                conditions.append("action_id = '").append(actions.get(0).getId()).append("'");
             } else {
                 StringBuilder actionQuery = new StringBuilder("(");
                 for (EnumAction action : actions) {
                     if (actionQuery.length() > 1) {
                         actionQuery.append(" OR ");
                     }
-                    actionQuery.append("action_id = ").append(action.getId());
+                    actionQuery.append("action_id = '").append(action.getId()).append("'");
                 }
                 actionQuery.append(")");
                 if (actionQuery.length() > 2) {
@@ -95,24 +95,27 @@ public class MySQLStorage implements StorageMethod {
             }
         }
         if (query.getSince() > 0) {
-            conditions.append(conditions.length() > 0 ? "AND " : "").append("timestamp >= ").append(query.getSince()).append(" ");
+            conditions.append(conditions.length() > 0 ? "AND " : "").append("timestamp >= '").append(query.getSince()).append("'").append(" ");
         }
         if (query.getBefore() > 0) {
-            conditions.append(conditions.length() > 0 ? "AND " : "").append("timestamp <= ").append(query.getBefore()).append(" ");
+            conditions.append(conditions.length() > 0 ? "AND " : "").append("timestamp <= '").append(query.getBefore()).append("'").append(" ");
         }
         if (query.getWorld() != null) {
-            conditions.append(conditions.length() > 0 ? "AND " : "").append("world_id = ").append(query.getWorld().getId()).append(" ");
+            conditions.append(conditions.length() > 0 ? "AND " : "").append("world_id = '").append(query.getWorld().getId()).append("' ");
             if (query.getPosition() != null && query.getRange() > 0) {
 
                 int minX = (int) (query.getPosition().getX() - query.getRange());
                 int minY = (int) (query.getPosition().getY() - query.getRange());
                 int minZ = (int) (query.getPosition().getZ() - query.getRange());
 
-                int maxX = (int) (query.getPosition().getX() - query.getRange());
-                int maxY = (int) (query.getPosition().getY() - query.getRange());
-                int maxZ = (int) (query.getPosition().getZ() - query.getRange());
+                int maxX = (int) (query.getPosition().getX() + query.getRange());
+                int maxY = (int) (query.getPosition().getY() + query.getRange());
+                int maxZ = (int) (query.getPosition().getZ() + query.getRange());
 
-                conditions.append(conditions.length() > 0 ? "AND " : "").append("pos_x BETWEEN ").append(minX).append(" AND ").append(maxX).append(" AND pos_y BETWEEN ").append(minY).append(" AND ").append(maxY).append(" AND pos_z BETWEEN ").append(minZ).append(" AND ").append(maxZ).append(" ");
+                conditions.append(conditions.length() > 0 ? "AND " : "").append("pos_x >= '").append(minX)
+                        .append("' AND pos_x <= '").append(maxX).append("' AND pos_y >= '").append(minY)
+                        .append("' AND pos_y <= '").append(maxY).append("' AND pos_z >= '").append(minZ)
+                        .append("' AND pos_z <= '").append(maxZ).append("' ");
             }
         }
         if (conditions.length() > 0) {
@@ -121,6 +124,7 @@ public class MySQLStorage implements StorageMethod {
             q.append("1 ");
         }
         q.append("ORDER BY timestamp DESC");
+        System.out.println("[DEBUG] Query: \"" + query.getSearchSummary() + "\" -> \"" + q.toString() + "\".");
         return q.toString();
     }
 

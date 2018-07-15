@@ -46,7 +46,7 @@ public class SnitchEntry {
     public String getDescriptor() {
         String base = getAction().getExplained();
 
-        base = base.replace("%actor", getSnitchPlayer().getPlayerName());
+        base = base.replace("%actor", "§6" + getSnitchPlayer().getPlayerName() + "§7");
 
         for(EnumActionVariables var : EnumActionVariables.values()){
             if (data.has(var.getKey())){
