@@ -1,11 +1,14 @@
 package co.melondev.Snitch.util;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import org.bukkit.DyeColor;
-import org.bukkit.block.BlockState;
+import org.bukkit.*;
+import org.bukkit.block.*;
+import org.bukkit.block.banner.Pattern;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.entity.minecart.CommandMinecart;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Colorable;
 import org.bukkit.material.MaterialData;
@@ -269,12 +272,122 @@ public class JsonUtil {
 
     }
 
+    public static JsonObject jsonify(Pattern pattern) {
+        JsonObject obj = new JsonObject();
+        obj.addProperty("color", pattern.getColor().name());
+        obj.addProperty("type", pattern.getPattern().name());
+        return obj;
+    }
+
+    public static JsonObject jsonify(Inventory inventory) {
+        JsonObject obj = new JsonObject();
+        for (int i = 0; i < inventory.getSize(); i++) {
+            obj.addProperty("slot" + i, ItemUtil.itemToJSON(inventory.getItem(i)));
+        }
+        return obj;
+    }
+
     public static JsonObject jsonify(BlockState block) {
         JsonObject obj = new JsonObject();
         obj.addProperty("type", block.getType().name());
         obj.addProperty("data", block.getRawData());
+        if ((block instanceof Banner)) {
+            obj.addProperty("baseColor", ((Banner) block).getBaseColor().name());
+            JsonArray patterns = new JsonArray();
+            for (Pattern pattern : ((Banner) block).getPatterns()) {
+                patterns.add(jsonify(pattern));
+            }
+            obj.add("patterns", patterns);
+        }
+        if ((block instanceof Beacon)) {
+            obj.addProperty("primaryEffect", ((Beacon) block).getPrimaryEffect().getType().getName());
+            obj.addProperty("secondaryEffect", ((Beacon) block).getSecondaryEffect().getType().getName());
+        }
+        if ((block instanceof Colorable)) {
+            obj.addProperty("color", ((Colorable) block).getColor().name());
+        }
+        if ((block instanceof BrewingStand)) {
+            obj.addProperty("brewingTime", ((BrewingStand) block).getBrewingTime());
+            obj.addProperty("fuelLevel", ((BrewingStand) block).getFuelLevel());
+            obj.add("inventory", jsonify(((BrewingStand) block).getSnapshotInventory()));
+        }
+        if ((block instanceof Container)) {
+            Container container = (Container) block;
+            obj.add("inventory", jsonify(container.getSnapshotInventory()));
+        }
+        if ((block instanceof Lockable)) {
+            Lockable lock = (Lockable) block;
+            obj.addProperty("locked", lock.getLock());
+        }
+        if ((block instanceof CommandBlock)) {
+            obj.addProperty("name", ((CommandBlock) block).getName());
+            obj.addProperty("command", ((CommandBlock) block).getCommand());
+        }
+        if ((block instanceof Chest)) {
+            obj.add("inventory", jsonify(((Chest) block).getBlockInventory()));
+        }
+        if ((block instanceof CreatureSpawner)) {
+            CreatureSpawner spawner = (CreatureSpawner) block;
+            obj.addProperty("spawnRange", spawner.getSpawnRange());
+            obj.addProperty("spawnType", spawner.getSpawnedType().name());
+            obj.addProperty("spawnCount", spawner.getSpawnCount());
+            obj.addProperty("requiredPlayers", spawner.getRequiredPlayerRange());
+            obj.addProperty("minDelay", spawner.getMinSpawnDelay());
+            obj.addProperty("maxDelay", spawner.getMaxSpawnDelay());
+            obj.addProperty("maxNearby", spawner.getMaxNearbyEntities());
+            obj.addProperty("delay", spawner.getDelay());
+        }
+        if ((block instanceof Nameable)) {
+            obj.addProperty("customName", ((Nameable) block).getCustomName());
+        }
+        if ((block instanceof EndGateway)) {
+            obj.addProperty("exactTeleport", ((EndGateway) block).isExactTeleport());
+            obj.add("exitLocation", jsonify(((EndGateway) block).getExitLocation()));
+        }
+        if ((block instanceof FlowerPot)) {
+            obj.addProperty("contents", ItemUtil.itemToJSON(new ItemStack(((FlowerPot) block).getContents().getItemType(), 1, ((FlowerPot) block).getContents().getData())));
+        }
+        if ((block instanceof Furnace)) {
+            Furnace furnace = (Furnace) block;
+            obj.addProperty("cookTime", furnace.getCookTime());
+            obj.addProperty("burnTime", furnace.getBurnTime());
+            obj.add("inventory", jsonify(furnace.getSnapshotInventory()));
+        }
+        if ((block instanceof NoteBlock)) {
+            NoteBlock note = (NoteBlock) block;
+            obj.addProperty("note", note.getRawNote());
+        }
+        if ((block instanceof Sign)) {
+            JsonArray signText = new JsonArray();
+            for (int i = 0; i < 4; i++) {
+                signText.add(((Sign) block).getLine(i));
+            }
+            obj.add("text", signText);
+        }
+        if ((block instanceof Skull)) {
+            obj.addProperty("skullType", ((Skull) block).getSkullType().name());
+            obj.addProperty("rotation", ((Skull) block).getRotation().name());
+            obj.addProperty("owningPlayer", ((Skull) block).hasOwner() ? ((Skull) block).getOwningPlayer().getUniqueId().toString() : null);
+        }
         return obj;
 
+    }
+
+    public static Location fromJson(JsonObject obj) {
+        World world = Bukkit.getWorld(obj.get("world").getAsString());
+        double x = obj.get("x").getAsDouble();
+        double y = obj.get("y").getAsDouble();
+        double z = obj.get("z").getAsDouble();
+        return new Location(world, x, y, z);
+    }
+
+    public static JsonObject jsonify(Location exitLocation) {
+        JsonObject obj = new JsonObject();
+        obj.addProperty("world", exitLocation.getWorld().getName());
+        obj.addProperty("x", exitLocation.getX());
+        obj.addProperty("y", exitLocation.getY());
+        obj.addProperty("z", exitLocation.getZ());
+        return obj;
     }
 
 }

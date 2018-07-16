@@ -149,6 +149,12 @@ public enum EnumActionVariables {
             return obj.get("ip").getAsString();
         }
     },
+    CAUSE("cause") {
+        @Override
+        public String getReplacement(JsonObject obj) {
+            return obj.get("cause").getAsString().replace("_", " ").toLowerCase();
+        }
+    },
     LOCATION("location") {
         @Override
         public String getReplacement(JsonObject obj) {
@@ -176,6 +182,34 @@ public enum EnumActionVariables {
         @Override
         public String getReplacement(JsonObject obj) {
             return obj.get("amount").getAsInt() + "";
+        }
+    },
+    SLOT("slot") {
+        @Override
+        public String getReplacement(JsonObject obj) {
+            return obj.get("slot").getAsString().toLowerCase();
+        }
+    },
+    OLDSIGNTEXT("old") {
+        @Override
+        public String getReplacement(JsonObject obj) {
+            List<String> lines = new ArrayList<>();
+            JsonObject old = obj.getAsJsonObject("old");
+            for (int i = 0; i < 4; i++) {
+                lines.add(old.get("line" + i).getAsString());
+            }
+            return String.join(", ", lines);
+        }
+    },
+    NEWSIGNTEXT("new") {
+        @Override
+        public String getReplacement(JsonObject obj) {
+            List<String> lines = new ArrayList<>();
+            JsonObject old = obj.getAsJsonObject("new");
+            for (int i = 0; i < 4; i++) {
+                lines.add(old.get("line" + i).getAsString());
+            }
+            return String.join(", ", lines);
         }
     };
 

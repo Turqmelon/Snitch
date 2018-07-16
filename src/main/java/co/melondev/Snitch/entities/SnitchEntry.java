@@ -3,6 +3,7 @@ package co.melondev.Snitch.entities;
 import co.melondev.Snitch.SnitchPlugin;
 import co.melondev.Snitch.enums.EnumAction;
 import co.melondev.Snitch.enums.EnumActionVariables;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -54,7 +55,12 @@ public class SnitchEntry {
 
         for(EnumActionVariables var : EnumActionVariables.values()){
             if (data.has(var.getKey())){
-                base = base.replace("%" + var.getKey(), "§6" + crossout + var.getReplacement(data.get(var.getKey()).getAsJsonObject()) + "§7" + crossout);
+                JsonElement e = data.get(var.getKey());
+                if (e.isJsonObject()) {
+                    base = base.replace("%" + var.getKey(), "§6" + crossout + var.getReplacement(e.getAsJsonObject()) + "§7" + crossout);
+                } else {
+                    base = base.replace("%" + var.getKey(), "§6" + crossout + var.getReplacement(data.getAsJsonObject()) + "§7" + crossout);
+                }
             }
         }
 

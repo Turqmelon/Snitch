@@ -10,13 +10,16 @@ import com.google.gson.JsonObject;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.enchantment.EnchantItemEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.sql.SQLException;
@@ -50,6 +53,27 @@ public class InventoryListener implements Listener {
                 ex.printStackTrace();
             }
         });
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPickup(EntityPickupItemEvent event) {
+        Entity entity = event.getEntity();
+        if (!EnumAction.ITEM_DROP.isEnabled())
+            return;
+        if ((entity instanceof Player)) {
+            Player player = (Player) entity;
+            ItemStack itemStack = event.getItem().getItemStack();
+            logAction(player, itemStack, player.getLocation(), EnumAction.ITEM_PICKUP);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onDrop(PlayerDropItemEvent event) {
+        Player player = event.getPlayer();
+        if (!EnumAction.ITEM_DROP.isEnabled())
+            return;
+        ItemStack itemStack = event.getItemDrop().getItemStack();
+        logAction(player, itemStack, player.getLocation(), EnumAction.ITEM_DROP);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

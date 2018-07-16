@@ -1,6 +1,7 @@
 package co.melondev.Snitch;
 
 import co.melondev.Snitch.commands.SnitchCommand;
+import co.melondev.Snitch.handlers.ChatListener;
 import co.melondev.Snitch.listeners.BlockListener;
 import co.melondev.Snitch.listeners.ConnectionListener;
 import co.melondev.Snitch.listeners.EntityListener;
@@ -76,6 +77,7 @@ public class SnitchPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new BlockListener(this), this);
         getServer().getPluginManager().registerEvents(new EntityListener(this), this);
         getServer().getPluginManager().registerEvents(new InventoryListener(this), this);
+        getServer().getPluginManager().registerEvents(new ChatListener(this), this);
 
         getCommand("snitch").setExecutor(new SnitchCommand(this));
     }

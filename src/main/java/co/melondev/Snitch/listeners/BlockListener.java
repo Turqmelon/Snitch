@@ -8,8 +8,11 @@ import co.melondev.Snitch.util.JsonUtil;
 import co.melondev.Snitch.util.MsgUtil;
 import com.google.gson.JsonObject;
 import org.bukkit.Material;
+import org.bukkit.TreeType;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
@@ -21,6 +24,7 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
@@ -226,7 +230,63 @@ public class BlockListener implements Listener {
             return;
         final Player player = event.getPlayer();
         final Block block = event.getBlock();
-        logBlockAction(player, block.getState(), EnumAction.BLOCK_PLACE);
+        if (block.getType() == Material.FIRE) {
+            logBlockAction(player, block.getState(), EnumAction.BLOCK_IGNITE);
+        } else {
+            logBlockAction(player, block.getState(), EnumAction.BLOCK_PLACE);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onTreeGrow(StructureGrowEvent event) {
+        Player player = event.getPlayer();
+        if (player == null) {
+            return;
+        }
+        if (event.getSpecies() != TreeType.BROWN_MUSHROOM && event.getSpecies() != TreeType.RED_MUSHROOM) {
+            if (EnumAction.TREE_GROW.isEnabled()) {
+                for (BlockState block : event.getBlocks()) {
+                    logBlockAction(player, block, EnumAction.TREE_GROW);
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onSignChange(SignChangeEvent event) {
+        if (!EnumAction.SIGN_CHANGE.isEnabled())
+            return;
+        Player player = event.getPlayer();
+        Block block = event.getBlock();
+        String[] currentLines = ((Sign) block.getState()).getLines();
+        String[] changedLines = event.getLines();
+        JsonObject obj = new JsonObject();
+        obj.add("block", JsonUtil.jsonify(block.getState()));
+        JsonObject oldLines = new JsonObject();
+        JsonObject newLines = new JsonObject();
+        for (int i = 0; i < 4; i++) {
+            oldLines.addProperty("line" + i, currentLines[i]);
+            newLines.addProperty("line" + i, changedLines[i]);
+        }
+        obj.add("old", oldLines);
+        obj.add("new", newLines);
+        logBlockAction(player, block.getState(), EnumAction.SIGN_CHANGE, obj);
+    }
+
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onFromTo(BlockFromToEvent event) {
+        BlockState from = event.getBlock().getState();
+        BlockState to = event.getToBlock().getState();
+        if (from.getType() == Material.STATIONARY_WATER || from.getType() == Material.WATER) {
+            if (EnumAction.WATER_FLOW.isEnabled()) {
+                logBlockAction(EnumDefaultPlayer.WATER, to, EnumAction.WATER_FLOW);
+            }
+        } else if (from.getType() == Material.STATIONARY_LAVA || from.getType() == Material.LAVA) {
+            if (EnumAction.LAVA_FLOW.isEnabled()) {
+                logBlockAction(EnumDefaultPlayer.LAVA, to, EnumAction.LAVA_FLOW);
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -250,10 +310,14 @@ public class BlockListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onFade(BlockFadeEvent event){
-        if (!EnumAction.BLOCK_FADE.isEnabled())
+        if (!EnumAction.BLOCK_FADE.isEnabled() && !EnumAction.LEAF_DECAY.isEnabled())
             return;
         final Block block = event.getNewState().getBlock();
-        logBlockAction(EnumDefaultPlayer.BLOCK, block.getState(), EnumAction.BLOCK_FADE);
+        if (block.getType() == Material.LEAVES || block.getType() == Material.LEAVES_2) {
+            logBlockAction(EnumDefaultPlayer.BLOCK, block.getState(), EnumAction.LEAF_DECAY);
+        } else {
+            logBlockAction(EnumDefaultPlayer.BLOCK, block.getState(), EnumAction.BLOCK_FADE);
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -275,6 +339,19 @@ public class BlockListener implements Listener {
         final Player player = event.getPlayer();
         final Block block = event.getBlock();
         logBlockAction(player, block.getState(), EnumAction.BLOCK_BREAK);
+        BlockFace[] faces = {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.UP};
+        for (BlockFace face : faces) {
+            Block relative = block.getRelative(face);
+            if (relative.getType() == Material.TORCH || relative.getType() == Material.REDSTONE_TORCH_OFF ||
+                    relative.getType() == Material.REDSTONE_TORCH_ON ||
+                    (relative.getType() == Material.REDSTONE && face == BlockFace.UP) ||
+                    (relative.getType() == Material.REDSTONE_COMPARATOR_ON && face == BlockFace.UP) ||
+                    (relative.getType() == Material.REDSTONE_COMPARATOR_OFF && face == BlockFace.UP) ||
+                    relative.getType() == Material.WALL_SIGN ||
+                    (relative.getType() == Material.SIGN_POST && face == BlockFace.UP)) {
+                logBlockAction(player, relative.getState(), EnumAction.BLOCK_BREAK);
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

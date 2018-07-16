@@ -4,7 +4,9 @@ import co.melondev.Snitch.entities.SnitchEntry;
 import co.melondev.Snitch.entities.SnitchProcessHandler;
 import co.melondev.Snitch.entities.SnitchSession;
 import co.melondev.Snitch.enums.EnumSnitchActivity;
+import co.melondev.Snitch.util.BlockUtil;
 import com.google.gson.JsonObject;
+import net.minecraft.server.v1_12_R1.MojangsonParseException;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -36,7 +38,11 @@ public class BlockCreationHandler implements SnitchProcessHandler {
         JsonObject blockData = entry.getData().getAsJsonObject("block");
         Location loc = entry.getSnitchPosition().toLocation(entry.getSnitchWorld());
         Block block = loc.getBlock();
-        block.setTypeIdAndData(Material.valueOf(blockData.get("type").getAsString()).getId(), blockData.get("data").getAsByte(), false);
+        try {
+            BlockUtil.rebuildBlock(block, blockData);
+        } catch (MojangsonParseException e) {
+            e.printStackTrace();
+        }
         return true;
     }
 
