@@ -25,7 +25,7 @@ public enum EnumAction {
     BLOCK_SHIFT(7, "shift", "%block shifted", new NoCapabilityHandler()), // TODO
     BLOCK_SPREAD(8, "spread", "%source spread to %block", new BlockSpreadHandler()),
     BLOCK_USE(9, "use", "%actor used %block", new NoCapabilityHandler()),
-    BLOCK_EXPLODE(16, "explode", "%actor blew up $block", new BlockDestructionHandler()),
+    BLOCK_EXPLODE(16, "explode", "%actor blew up %block", new BlockDestructionHandler()),
     BONEMEAL_USE(10, "bonemeal", "%actor used bonemeal on %block", new NoCapabilityHandler()), // TODO
     BUCKET_FILL(11, "fill", "%actor filled a %bucket bucket", new BlockDestructionHandler()),
     BUCKET_EMPTY(12, "empty", "%actor emptied a %bucket bucket", new BlockCreationHandler()),

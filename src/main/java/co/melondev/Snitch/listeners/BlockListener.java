@@ -10,6 +10,7 @@ import co.melondev.Snitch.util.JsonUtil;
 import com.google.gson.JsonObject;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
@@ -82,16 +83,16 @@ public class BlockListener implements Listener {
         this.i = i;
     }
 
-    private void logBlockAction(Player player, Block block, EnumAction action){
+    private void logBlockAction(Player player, BlockState block, EnumAction action) {
         logBlockAction(player, block, action, null);
     }
 
-    private void logBlockAction(Player player, Block block, EnumAction action, JsonObject data){
+    private void logBlockAction(Player player, BlockState block, EnumAction action, JsonObject data) {
         i.async(()->{
             try {
                 SnitchPlayer snitchPlayer = i.getStorage().getPlayer(player.getUniqueId());
                 SnitchWorld world = i.getStorage().register(block.getWorld());
-                SnitchPosition position = new SnitchPosition(block);
+                SnitchPosition position = new SnitchPosition(block.getLocation());
                 JsonObject d = data;
                 if (d == null) {
                     d = new JsonObject();
@@ -104,11 +105,11 @@ public class BlockListener implements Listener {
         });
     }
 
-    private void logBlockAction(EnumDefaultPlayer defaultPlayer, Block block, EnumAction action, JsonObject data){
+    private void logBlockAction(EnumDefaultPlayer defaultPlayer, BlockState block, EnumAction action, JsonObject data) {
         i.async(()->{
             try {
                 SnitchWorld world = i.getStorage().register(block.getWorld());
-                SnitchPosition position = new SnitchPosition(block);
+                SnitchPosition position = new SnitchPosition(block.getLocation());
                 JsonObject d = data;
                 if (d == null) {
                     d = new JsonObject();
@@ -121,7 +122,7 @@ public class BlockListener implements Listener {
         });
     }
 
-    private void logBlockAction(EnumDefaultPlayer defaultPlayer, Block block, EnumAction action){
+    private void logBlockAction(EnumDefaultPlayer defaultPlayer, BlockState block, EnumAction action) {
         this.logBlockAction(defaultPlayer, block, action, null);
     }
 
@@ -135,9 +136,9 @@ public class BlockListener implements Listener {
         final Block block = event.getBlockClicked();
         final Material material = event.getBucket();
         JsonObject obj = new JsonObject();
-        obj.add("block", JsonUtil.jsonify(block));
+        obj.add("block", JsonUtil.jsonify(block.getState()));
         obj.add("bucket", JsonUtil.jsonify(new ItemStack(material)));
-        logBlockAction(player, block, EnumAction.BUCKET_EMPTY, obj);
+        logBlockAction(player, block.getState(), EnumAction.BUCKET_EMPTY, obj);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -149,9 +150,9 @@ public class BlockListener implements Listener {
         final Block block = event.getBlockClicked();
         final Material material = event.getBucket();
         JsonObject obj = new JsonObject();
-        obj.add("block", JsonUtil.jsonify(block));
+        obj.add("block", JsonUtil.jsonify(block.getState()));
         obj.add("bucket", JsonUtil.jsonify(new ItemStack(material)));
-        logBlockAction(player, block, EnumAction.BUCKET_FILL, obj);
+        logBlockAction(player, block.getState(), EnumAction.BUCKET_FILL, obj);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -160,14 +161,14 @@ public class BlockListener implements Listener {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK){
             Block block = event.getClickedBlock();
             if (interactables.contains(block.getType()) && EnumAction.BLOCK_USE.isEnabled()){
-                logBlockAction(player, block, EnumAction.BLOCK_USE);
+                logBlockAction(player, block.getState(), EnumAction.BLOCK_USE);
             }
         }
         else if (event.getAction() == Action.PHYSICAL){
             Block block = event.getClickedBlock();
             if (block.getType() == Material.SOIL){
                 if (EnumAction.CROP_TRAMPLE.isEnabled()){
-                    logBlockAction(player, block, EnumAction.CROP_TRAMPLE);
+                    logBlockAction(player, block.getState(), EnumAction.CROP_TRAMPLE);
                 }
             }
         }
@@ -181,9 +182,9 @@ public class BlockListener implements Listener {
         final Block block = event.getBlock();
         final Block source = event.getSource();
         JsonObject obj = new JsonObject();
-        obj.add("block", JsonUtil.jsonify(block));
-        obj.add("source", JsonUtil.jsonify(source));
-        logBlockAction(EnumDefaultPlayer.BLOCK, block, EnumAction.BLOCK_SPREAD, obj);
+        obj.add("block", JsonUtil.jsonify(block.getState()));
+        obj.add("source", JsonUtil.jsonify(source.getState()));
+        logBlockAction(EnumDefaultPlayer.BLOCK, block.getState(), EnumAction.BLOCK_SPREAD, obj);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -192,7 +193,7 @@ public class BlockListener implements Listener {
             return;
         final Player player = event.getPlayer();
         final Block block = event.getBlock();
-        logBlockAction(player, block, EnumAction.BLOCK_PLACE);
+        logBlockAction(player, block.getState(), EnumAction.BLOCK_PLACE);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -200,7 +201,7 @@ public class BlockListener implements Listener {
         if (!EnumAction.BLOCK_FORM.isEnabled())
             return;
         final Block block = event.getNewState().getBlock();
-        logBlockAction(EnumDefaultPlayer.BLOCK, block, EnumAction.BLOCK_FORM);
+        logBlockAction(EnumDefaultPlayer.BLOCK, block.getState(), EnumAction.BLOCK_FORM);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -209,7 +210,7 @@ public class BlockListener implements Listener {
         if ((entity instanceof FallingBlock)){
             Block block = event.getBlock();
             if (EnumAction.BLOCK_FALL.isEnabled()){
-                logBlockAction(EnumDefaultPlayer.BLOCK, block, EnumAction.BLOCK_FALL);
+                logBlockAction(EnumDefaultPlayer.BLOCK, block.getState(), EnumAction.BLOCK_FALL);
             }
         }
     }
@@ -219,7 +220,7 @@ public class BlockListener implements Listener {
         if (!EnumAction.BLOCK_FADE.isEnabled())
             return;
         final Block block = event.getNewState().getBlock();
-        logBlockAction(EnumDefaultPlayer.BLOCK, block, EnumAction.BLOCK_FADE);
+        logBlockAction(EnumDefaultPlayer.BLOCK, block.getState(), EnumAction.BLOCK_FADE);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -229,9 +230,9 @@ public class BlockListener implements Listener {
         Block block = event.getBlock();
         ItemStack itemStack = event.getItem();
         JsonObject obj = new JsonObject();
-        obj.add("block", JsonUtil.jsonify(block));
+        obj.add("block", JsonUtil.jsonify(block.getState()));
         obj.add("item", JsonUtil.jsonify(itemStack));
-        logBlockAction(EnumDefaultPlayer.BLOCK, block, EnumAction.BLOCK_DISPENSE, obj);
+        logBlockAction(EnumDefaultPlayer.BLOCK, block.getState(), EnumAction.BLOCK_DISPENSE, obj);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -240,7 +241,7 @@ public class BlockListener implements Listener {
             return;
         final Player player = event.getPlayer();
         final Block block = event.getBlock();
-        logBlockAction(player, block, EnumAction.BLOCK_BREAK);
+        logBlockAction(player, block.getState(), EnumAction.BLOCK_BREAK);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -248,6 +249,6 @@ public class BlockListener implements Listener {
         if (!EnumAction.BLOCK_BURN.isEnabled())
             return;
         final Block block = event.getBlock();
-        logBlockAction(EnumDefaultPlayer.FIRE, block, EnumAction.BLOCK_BURN);
+        logBlockAction(EnumDefaultPlayer.FIRE, block.getState(), EnumAction.BLOCK_BURN);
     }
 }

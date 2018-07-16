@@ -2,7 +2,7 @@ package co.melondev.Snitch.util;
 
 import com.google.gson.JsonObject;
 import org.bukkit.DyeColor;
-import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.entity.minecart.CommandMinecart;
@@ -269,11 +269,10 @@ public class JsonUtil {
 
     }
 
-    public static JsonObject jsonify(Block block){
+    public static JsonObject jsonify(BlockState block) {
         JsonObject obj = new JsonObject();
         obj.addProperty("type", block.getType().name());
-        obj.addProperty("data", block.getData());
-        obj.addProperty("biome", block.getBiome().name());
+        obj.addProperty("data", block.getRawData());
         return obj;
 
     }

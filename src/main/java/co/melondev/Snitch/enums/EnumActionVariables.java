@@ -4,6 +4,9 @@ import co.melondev.Snitch.util.ItemUtil;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.server.v1_12_R1.MojangsonParseException;
+import org.apache.commons.lang.WordUtils;
+import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -33,7 +36,61 @@ public enum EnumActionVariables {
     DYE("dye") {
         @Override
         public String getReplacement(JsonObject obj) {
-            return obj.get("type").getAsString();
+            DyeColor color = DyeColor.valueOf(obj.get("type").getAsString());
+            ChatColor chatColor = ChatColor.WHITE;
+
+            switch (color) {
+                case RED:
+                    chatColor = ChatColor.RED;
+                    break;
+                case BLUE:
+                    chatColor = ChatColor.BLUE;
+                    break;
+                case CYAN:
+                    chatColor = ChatColor.DARK_AQUA;
+                    break;
+                case GRAY:
+                    chatColor = ChatColor.DARK_GRAY;
+                    break;
+                case LIME:
+                    chatColor = ChatColor.GREEN;
+                    break;
+                case PINK:
+                    chatColor = ChatColor.LIGHT_PURPLE;
+                    break;
+                case BLACK:
+                    chatColor = ChatColor.BLACK;
+                    break;
+                case BROWN:
+                    chatColor = ChatColor.DARK_RED;
+                    break;
+                case GREEN:
+                    chatColor = ChatColor.DARK_GREEN;
+                    break;
+                case WHITE:
+                    chatColor = ChatColor.WHITE;
+                    break;
+                case ORANGE:
+                    chatColor = ChatColor.GOLD;
+                    break;
+                case PURPLE:
+                    chatColor = ChatColor.DARK_PURPLE;
+                    break;
+                case SILVER:
+                    chatColor = ChatColor.GRAY;
+                    break;
+                case YELLOW:
+                    chatColor = ChatColor.YELLOW;
+                    break;
+                case MAGENTA:
+                    chatColor = ChatColor.LIGHT_PURPLE;
+                    break;
+                case LIGHT_BLUE:
+                    chatColor = ChatColor.AQUA;
+                    break;
+            }
+
+            return chatColor + WordUtils.capitalizeFully(color.name().replace("_", " ")) + "§7";
         }
     },
     ENCHANTS("enchants") {
@@ -77,7 +134,7 @@ public enum EnumActionVariables {
     ENTITY("entity") {
         @Override
         public String getReplacement(JsonObject obj) {
-            return obj.get("entityType").getAsString();
+            return obj.get("entityType").getAsString().replace("_", " ").toLowerCase();
         }
     },
     MESSAGE("message") {
