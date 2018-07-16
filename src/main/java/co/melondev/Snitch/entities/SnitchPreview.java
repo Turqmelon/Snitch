@@ -2,11 +2,15 @@ package co.melondev.Snitch.entities;
 
 import co.melondev.Snitch.SnitchPlugin;
 import co.melondev.Snitch.enums.EnumSnitchActivity;
+import co.melondev.Snitch.util.AdjustedBlock;
+import co.melondev.Snitch.util.BlockUtil;
 import co.melondev.Snitch.util.MsgUtil;
 import co.melondev.Snitch.util.Previewable;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -47,6 +51,7 @@ public class SnitchPreview implements Previewable {
         this.applied = 0;
         this.failed = 0;
         this.planned = 0;
+        this.callback = new SnitchRollback.DefaultRollbackCallback(System.currentTimeMillis());
         apply();
     }
 
@@ -131,6 +136,30 @@ public class SnitchPreview implements Previewable {
     private void postProcess() {
         if (isPreview()) {
             session.setActivePreview(this);
+        } else {
+            if (session.getQuery().isAreaSelection()) {
+                List<AdjustedBlock> changed = BlockUtil.removeNear(Arrays.asList(Material.FIRE), session.getQuery().getPosition().toLocation(session.getQuery().getWorld()), (int) session.getQuery().getRange());
+                if (!changed.isEmpty()) {
+                    session.getPlayer().sendMessage(MsgUtil.info("Extinguished " + changed.size() + " fires."));
+                }
+            }
+        }
+        this.callback.handle(session.getPlayer(), new SnitchResult(applied, failed, planned, isPreview(), movedEntities, session.getQuery(), new ArrayList<>()));
+    }
+
+    public static class DefaultPreviewCallback implements SnitchCallback {
+
+        private SnitchQuery query;
+
+        public DefaultPreviewCallback(SnitchQuery query) {
+            this.query = query;
+        }
+
+        @Override
+        public void handle(Player player, SnitchResult result) {
+            player.sendMessage(MsgUtil.success("Previewing rollback for " + query.getSearchSummary().toLowerCase()));
+            player.sendMessage(MsgUtil.record("Showing " + result.getApplied() + " planned changes"));
+            player.sendMessage(MsgUtil.record("Type §a/snitch pv apply§7 or §c/snitch pv cancel§7 to continue."));
         }
     }
 }

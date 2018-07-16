@@ -87,7 +87,7 @@ public class EntityListener implements Listener {
                 JsonObject d = data;
                 if (d == null) {
                     d = new JsonObject();
-                    d.add("block", JsonUtil.jsonify(block));
+                    d.add("block", JsonUtil.jsonify(block.getState()));
                 }
                 i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
             } catch (SQLException ex) {
@@ -173,8 +173,8 @@ public class EntityListener implements Listener {
         Block block = event.getNewState().getBlock();
         JsonObject obj = new JsonObject();
         obj.add("entity", JsonUtil.jsonify(entity));
-        obj.add("block", JsonUtil.jsonify(block));
-        obj.add("oldBlock", JsonUtil.jsonify(event.getBlock()));
+        obj.add("block", JsonUtil.jsonify(block.getState()));
+        obj.add("oldBlock", JsonUtil.jsonify(event.getBlock().getState()));
 
         logAction(EnumDefaultPlayer.BLOCK, entity, block.getLocation(), EnumAction.ENTITY_FORMED, obj);
     }

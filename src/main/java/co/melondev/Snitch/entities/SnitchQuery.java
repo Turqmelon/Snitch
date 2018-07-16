@@ -22,10 +22,20 @@ public class SnitchQuery {
     private SnitchWorld world = null;
     private SnitchPosition position = null;
     private double range = -1;
+    private boolean useExactPosition = false;
 
     public SnitchQuery() {
         this.since = System.currentTimeMillis() - SnitchPlugin.getInstance().getConfiguration().getDefaultTime();
         this.before = System.currentTimeMillis() + 1000;
+    }
+
+    public SnitchQuery exactPosition() {
+        this.useExactPosition = true;
+        return this;
+    }
+
+    public boolean isUseExactPosition() {
+        return useExactPosition;
     }
 
     public SnitchQuery since(long time) {
@@ -91,6 +101,8 @@ public class SnitchQuery {
             if (this.position != null) {
                 d.append(" of ").append(this.position.getX()).append("x, ").append(this.position.getY()).append("y, ").append(this.position.getZ()).append("z");
             }
+        } else if (this.isUseExactPosition() && this.position != null) {
+            d.append(" at ").append(this.position.getX()).append("x, ").append(this.position.getY()).append("y, ").append(this.position.getZ()).append("z");
         } else {
             d.append(" everywhere");
         }
@@ -102,6 +114,10 @@ public class SnitchQuery {
         }
 
         return d.toString();
+    }
+
+    public boolean isAreaSelection() {
+        return world != null && position != null && range > 0;
     }
 
     private String[] getValues(List<String> args, int offset) {

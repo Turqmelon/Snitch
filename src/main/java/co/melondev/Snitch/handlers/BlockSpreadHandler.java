@@ -23,7 +23,6 @@ public class BlockSpreadHandler implements SnitchProcessHandler {
         byte data = blockData.get("data").getAsByte();
         Biome biome = Biome.valueOf(blockData.get("biome").getAsString());
         b.setTypeIdAndData(material.getId(), data, false);
-        b.setBiome(biome);
         return true;
     }
 
@@ -48,7 +47,6 @@ public class BlockSpreadHandler implements SnitchProcessHandler {
         byte data = sourceData.get("data").getAsByte();
         Biome biome = Biome.valueOf(sourceData.get("biome").getAsString());
         b.setTypeIdAndData(material.getId(), data, false);
-        b.setBiome(biome);
         return true;
     }
 

@@ -65,7 +65,7 @@ public class InventoryListener implements Listener {
 
         JsonObject obj = new JsonObject();
         obj.add("item", JsonUtil.jsonify(itemStack));
-        obj.add("block", JsonUtil.jsonify(block));
+        obj.add("block", JsonUtil.jsonify(block.getState()));
         obj.add("enchants", JsonUtil.jsonify(event.getEnchantsToAdd()));
 
         logAction(player, itemStack, block.getLocation(), EnumAction.ENCHANT_ITEM, obj);

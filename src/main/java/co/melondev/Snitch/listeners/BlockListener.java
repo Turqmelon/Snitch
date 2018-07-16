@@ -1,12 +1,11 @@
 package co.melondev.Snitch.listeners;
 
 import co.melondev.Snitch.SnitchPlugin;
-import co.melondev.Snitch.entities.SnitchPlayer;
-import co.melondev.Snitch.entities.SnitchPosition;
-import co.melondev.Snitch.entities.SnitchWorld;
+import co.melondev.Snitch.entities.*;
 import co.melondev.Snitch.enums.EnumAction;
 import co.melondev.Snitch.enums.EnumDefaultPlayer;
 import co.melondev.Snitch.util.JsonUtil;
+import co.melondev.Snitch.util.MsgUtil;
 import com.google.gson.JsonObject;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -22,6 +21,7 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import java.sql.SQLException;
@@ -158,13 +158,46 @@ public class BlockListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInteract(PlayerInteractEvent event){
         Player player = event.getPlayer();
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK){
+        if (event.getHand() != EquipmentSlot.HAND) {
+            return;
+        }
+        if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
             Block block = event.getClickedBlock();
+            if (player.hasMetadata("snitch-inspector")) {
+                event.setCancelled(true);
+                i.async(() -> {
+                    try {
+                        SnitchQuery query = new SnitchQuery().relativeTo(new SnitchPosition(block.getLocation()))
+                                .inWorld(block.getWorld()).exactPosition();
+                        List<SnitchEntry> entries = i.getStorage().performLookup(query);
+                        MsgUtil.sendRecords(player, query, entries, 1, 7);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
+        } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            Block block = event.getClickedBlock();
+
+            if (player.hasMetadata("snitch-inspector")) {
+                event.setCancelled(true);
+                Block target = block.getRelative(event.getBlockFace());
+                i.async(() -> {
+                    try {
+                        SnitchQuery query = new SnitchQuery().relativeTo(new SnitchPosition(target.getLocation()))
+                                .inWorld(target.getWorld()).exactPosition();
+                        List<SnitchEntry> entries = i.getStorage().performLookup(query);
+                        MsgUtil.sendRecords(player, query, entries, 1, 7);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
+
             if (interactables.contains(block.getType()) && EnumAction.BLOCK_USE.isEnabled()){
                 logBlockAction(player, block.getState(), EnumAction.BLOCK_USE);
             }
-        }
-        else if (event.getAction() == Action.PHYSICAL){
+        } else if (event.getAction() == Action.PHYSICAL){
             Block block = event.getClickedBlock();
             if (block.getType() == Material.SOIL){
                 if (EnumAction.CROP_TRAMPLE.isEnabled()){

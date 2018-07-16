@@ -7,7 +7,6 @@ import co.melondev.Snitch.enums.EnumSnitchActivity;
 import com.google.gson.JsonObject;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 
 /**
@@ -21,7 +20,6 @@ public class BlockDestructionHandler implements SnitchProcessHandler {
         Location loc = entry.getSnitchPosition().toLocation(entry.getSnitchWorld());
         Block block = loc.getBlock();
         block.setTypeIdAndData(Material.valueOf(blockData.get("type").getAsString()).getId(), blockData.get("data").getAsByte(), false);
-        block.setBiome(Biome.valueOf(blockData.get("biome").getAsString()));
         return true;
     }
 

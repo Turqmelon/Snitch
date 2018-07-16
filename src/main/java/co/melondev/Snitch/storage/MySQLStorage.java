@@ -116,6 +116,11 @@ public class MySQLStorage implements StorageMethod {
                         .append("' AND pos_x <= '").append(maxX).append("' AND pos_y >= '").append(minY)
                         .append("' AND pos_y <= '").append(maxY).append("' AND pos_z >= '").append(minZ)
                         .append("' AND pos_z <= '").append(maxZ).append("' ");
+            } else if (query.getPosition() != null && query.isUseExactPosition()) {
+                SnitchPosition p = query.getPosition();
+                conditions.append(conditions.length() > 0 ? "AND " : "").append("pos_x = '").append(p.getX())
+                        .append("' AND pos_y ='").append(p.getY()).append("' AND pos_z = '").append(p.getZ())
+                        .append("' ");
             }
         }
         if (conditions.length() > 0) {

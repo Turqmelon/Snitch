@@ -2,10 +2,13 @@ package co.melondev.Snitch.enums;
 
 import co.melondev.Snitch.SnitchPlugin;
 import co.melondev.Snitch.entities.*;
+import co.melondev.Snitch.util.AdjustedBlock;
+import co.melondev.Snitch.util.BlockUtil;
 import co.melondev.Snitch.util.MsgUtil;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -68,12 +71,7 @@ public enum EnumSnitchCommand {
                 SnitchSession session = EnumSnitchCommand.getOrCreateSession(player, query, entryList, 1);
 
                 final long startTime = System.currentTimeMillis();
-                SnitchRollback rollback = new SnitchRollback(session, (player1, result) -> {
-                    long diff = System.currentTimeMillis() - startTime;
-                    player1.sendMessage(MsgUtil.success("Rollback successfully completed in " + diff + "ms."));
-                    player1.sendMessage(MsgUtil.record("Total Changes: " + result.getApplied() + "§c§o (" + result.getFailed() + " Failed)"));
-                    player1.sendMessage(MsgUtil.record("If you made a mistake, you can §e/snitch restore <param>§7."));
-                });
+                SnitchRollback rollback = new SnitchRollback(session, new SnitchRollback.DefaultRollbackCallback(startTime));
                 rollback.apply();
 
             } else {
@@ -93,11 +91,7 @@ public enum EnumSnitchCommand {
                 SnitchSession session = EnumSnitchCommand.getOrCreateSession(player, query, entryList, 1);
 
                 final long startTime = System.currentTimeMillis();
-                SnitchRestore restore = new SnitchRestore(session, (player1, result) -> {
-                    long diff = System.currentTimeMillis() - startTime;
-                    player1.sendMessage(MsgUtil.success("Restore successfully completed in " + diff + "ms."));
-                    player1.sendMessage(MsgUtil.record("Total Changes: " + result.getApplied() + "§c§o (" + result.getFailed() + " Failed)"));
-                });
+                SnitchRestore restore = new SnitchRestore(session, new SnitchRestore.DefaultRestoreCallback(startTime));
                 restore.apply();
 
             } else {
@@ -117,6 +111,7 @@ public enum EnumSnitchCommand {
                         if (session != null && session.getActivePreview() != null) {
                             session.getActivePreview().applyPreview();
                             session.setActivePreview(null);
+                            return;
                         } else {
                             sender.sendMessage(MsgUtil.error("You don't have any active preview! Get started with \"/snitch pv <params>\"."));
                             return;
@@ -126,6 +121,7 @@ public enum EnumSnitchCommand {
                         if (session != null && session.getActivePreview() != null) {
                             session.getActivePreview().cancelPreview();
                             session.setActivePreview(null);
+                            return;
                         } else {
                             sender.sendMessage(MsgUtil.error("You don't have any active preview! Get started with \"/snitch pv <params>\"."));
                             return;
@@ -141,12 +137,7 @@ public enum EnumSnitchCommand {
                     session.getActivePreview().cancelPreview();
                     session.setActivePreview(null);
                 }
-
-                SnitchPreview preview = new SnitchPreview(session, (player1, result) -> {
-                    player.sendMessage(MsgUtil.success("Previewing rollback for " + query.getSearchSummary().toLowerCase()));
-                    player.sendMessage(MsgUtil.record("Showing " + result.getApplied() + " planned changes"));
-                    player.sendMessage(MsgUtil.record("Type §a/snitch pv apply§7 or §c/snitch pv cancel§7 to continue."));
-                });
+                SnitchPreview preview = new SnitchPreview(session, new SnitchPreview.DefaultPreviewCallback(query));
                 preview.apply();
 
             } else {
@@ -179,9 +170,9 @@ public enum EnumSnitchCommand {
                 Player player = (Player) sender;
 
                 int range = 5;
-                if (args.size() == 2) {
+                if (args.size() == 1) {
                     try {
-                        range = Integer.parseInt(args.get(1));
+                        range = Integer.parseInt(args.get(0));
                         if (range < 1) {
                             throw new NumberFormatException();
                         }
@@ -319,6 +310,62 @@ public enum EnumSnitchCommand {
                 }
             } else {
                 sender.sendMessage(MsgUtil.error("You must be a player to use the pagination commands."));
+            }
+        }
+    },
+    DRAIN(Arrays.asList("drain", "dr"), "[radius]", "Drain liquids", "snitch.drain") {
+        @Override
+        public void run(CommandSender sender, List<String> args) throws SQLException {
+            if ((sender instanceof Player)) {
+
+                Player player = (Player) sender;
+
+                int range = 10;
+                if (args.size() == 1) {
+                    try {
+                        range = Integer.parseInt(args.get(0));
+                    } catch (NumberFormatException ex) {
+                        sender.sendMessage(MsgUtil.error("You must provide a valid radius."));
+                    }
+                }
+
+                List<AdjustedBlock> changed = BlockUtil.removeNear(Arrays.asList(Material.WATER, Material.STATIONARY_WATER, Material.LAVA, Material.STATIONARY_LAVA), player.getLocation(), range);
+                if (changed.isEmpty()) {
+                    sender.sendMessage(MsgUtil.error("There were no liquids to drain withn " + range + " blocks. You can try a larger radius with \"/snitch dr <radius>\"."));
+                } else {
+                    sender.sendMessage(MsgUtil.success("Drained " + changed.size() + " liquids within " + range + " blocks."));
+                }
+
+            } else {
+                sender.sendMessage(MsgUtil.error("You must be a player to use the extinguish command."));
+            }
+        }
+    },
+    EXTINGUISH(Arrays.asList("extinguish", "ex"), "[radius]", "Extinguish fires", "snitch.extinguish") {
+        @Override
+        public void run(CommandSender sender, List<String> args) throws SQLException {
+            if ((sender instanceof Player)) {
+
+                Player player = (Player) sender;
+
+                int range = 10;
+                if (args.size() == 1) {
+                    try {
+                        range = Integer.parseInt(args.get(0));
+                    } catch (NumberFormatException ex) {
+                        sender.sendMessage(MsgUtil.error("You must provide a valid radius."));
+                    }
+                }
+
+                List<AdjustedBlock> changed = BlockUtil.removeNear(Arrays.asList(Material.FIRE), player.getLocation(), range);
+                if (changed.isEmpty()) {
+                    sender.sendMessage(MsgUtil.error("There were no fires to extinguish withn " + range + " blocks. You can try a larger radius with \"/snitch ex <radius>\"."));
+                } else {
+                    sender.sendMessage(MsgUtil.success("Extinguished " + changed.size() + " fires within " + range + " blocks."));
+                }
+
+            } else {
+                sender.sendMessage(MsgUtil.error("You must be a player to use the extinguish command."));
             }
         }
     };
