@@ -284,7 +284,7 @@ public class MySQLStorage implements StorageMethod {
             try (ResultSet set = ins.getGeneratedKeys()) {
                 if (set.next()) {
                     int id = set.getInt(1);
-                    return new SnitchEntry(id, action, player, world, position, time, data);
+                    return new SnitchEntry(id, action, player, world, position, time, data, false);
                 }
             }
         }
@@ -327,6 +327,16 @@ public class MySQLStorage implements StorageMethod {
     @Override
     public SnitchWorld getWorld(int worldID) {
         return worldIdMap.getOrDefault(worldID, null);
+    }
+
+    @Override
+    public void markReverted(SnitchEntry entry, boolean reverted) throws SQLException {
+        entry.setReverted(reverted);
+        try (Connection conn = getConnection(); PreparedStatement upd = conn.prepareStatement("UPDATE " + tble("logs" + " SET is_reverted = ? WHERE id = ?;"))) {
+            upd.setInt(1, reverted ? 1 : 0);
+            upd.setInt(2, entry.getId());
+            upd.execute();
+        }
     }
 
     public class MySQLDataSource implements Closeable {

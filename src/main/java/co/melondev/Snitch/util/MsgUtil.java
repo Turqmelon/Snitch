@@ -7,6 +7,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -68,6 +69,14 @@ public class MsgUtil {
             }
         }
 
+    }
+
+    public static void staff(String message) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.hasPermission("snitch.notify")) {
+                player.sendMessage("§f§l[Snitch] §b" + message);
+            }
+        }
     }
 
     public static String record(String message) {

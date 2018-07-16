@@ -13,6 +13,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -75,6 +76,7 @@ public class SnitchPreview implements Previewable {
                     int iteration = 0;
                     final int offset = changesIndex;
                     if (offset < pendingEntries.size()) {
+                        primaryloop:
                         for (final Iterator<SnitchEntry> iterator = pendingEntries.listIterator(offset); iterator.hasNext(); ) {
                             SnitchEntry entry = iterator.next();
                             if (isPreview())
@@ -94,12 +96,24 @@ public class SnitchPreview implements Previewable {
 
                                 switch (activity) {
                                     case ROLLBACK:
+                                        if (entry.isReverted()) {
+                                            iterator.remove();
+                                            continue primaryloop;
+                                        }
                                         result = handler.handleRollback(session, entry);
                                         break;
                                     case RESTORE:
+                                        if (!entry.isReverted()) {
+                                            iterator.remove();
+                                            continue;
+                                        }
                                         result = handler.handleRestore(session, entry);
                                         break;
                                     case PREVIEW:
+                                        if (entry.isReverted()) {
+                                            iterator.remove();
+                                            continue;
+                                        }
                                         result = handler.handlePreview(session, entry);
                                         break;
                                     default:
@@ -108,6 +122,23 @@ public class SnitchPreview implements Previewable {
 
 
                                 if (result) {
+                                    if (activity == EnumSnitchActivity.ROLLBACK) {
+                                        SnitchPlugin.getInstance().async(() -> {
+                                            try {
+                                                SnitchPlugin.getInstance().getStorage().markReverted(entry, true);
+                                            } catch (SQLException e) {
+                                                e.printStackTrace();
+                                            }
+                                        });
+                                    } else if (activity == EnumSnitchActivity.RESTORE) {
+                                        SnitchPlugin.getInstance().async(() -> {
+                                            try {
+                                                SnitchPlugin.getInstance().getStorage().markReverted(entry, false);
+                                            } catch (SQLException e) {
+                                                e.printStackTrace();
+                                            }
+                                        });
+                                    }
                                     applied++;
                                 } else {
                                     failed++;
@@ -159,6 +190,9 @@ public class SnitchPreview implements Previewable {
         public void handle(Player player, SnitchResult result) {
             player.sendMessage(MsgUtil.success("Previewing rollback for " + query.getSearchSummary().toLowerCase()));
             player.sendMessage(MsgUtil.record("Showing " + result.getApplied() + " planned changes"));
+            if (!result.getMovedEntities().isEmpty()) {
+                player.sendMessage(MsgUtil.record(result.getMovedEntities().size() + "+ entities will be moved to safety"));
+            }
             player.sendMessage(MsgUtil.record("Type §a/snitch pv apply§7 or §c/snitch pv cancel§7 to continue."));
         }
     }

@@ -2,10 +2,7 @@ package co.melondev.Snitch.enums;
 
 import co.melondev.Snitch.SnitchPlugin;
 import co.melondev.Snitch.entities.SnitchProcessHandler;
-import co.melondev.Snitch.handlers.BlockCreationHandler;
-import co.melondev.Snitch.handlers.BlockDestructionHandler;
-import co.melondev.Snitch.handlers.BlockSpreadHandler;
-import co.melondev.Snitch.handlers.NoCapabilityHandler;
+import co.melondev.Snitch.handlers.*;
 import org.apache.commons.lang.WordUtils;
 
 import java.util.ArrayList;
@@ -18,7 +15,7 @@ public enum EnumAction {
     BLOCK_BURN(0, "burn", "%actor burned %block", new BlockDestructionHandler()),
     BLOCK_BREAK(1, "break", "%actor broke %block", new BlockDestructionHandler()),
     BLOCK_DISPENSE(2, "dispense", "%block dispensed %item", new NoCapabilityHandler()),
-    BLOCK_FADE(3, "fade", "%block faded", new BlockDestructionHandler()),
+    BLOCK_FADE(3, "fade", "%block disappeared", new BlockDestructionHandler()),
     BLOCK_FALL(4, "fall", "%block fell", new BlockDestructionHandler()),
     BLOCK_FORM(5, "form", "%block formed", new BlockCreationHandler()),
     BLOCK_PLACE(6, "place", "%actor placed %block", new BlockCreationHandler()),
@@ -39,7 +36,7 @@ public enum EnumAction {
     ENTITY_EXPLODE(21, "explode", "%actor exploded", new NoCapabilityHandler()),
     ENTITY_FOLLOW(22, "lure", "%actor lured %entity", new NoCapabilityHandler()),
     ENTITY_FORMED(23, "form", "%actor formed", new NoCapabilityHandler()),
-    ENTITY_KILL(24, "kill", "%actor killed %entity", new NoCapabilityHandler()),
+    ENTITY_KILL(24, "kill", "%actor killed %entity", new EntityDeathHandler()),
     ENTITY_LEASH(25, "leash", "%actor leashed %entity", new NoCapabilityHandler()),
     ENTITY_SHEAR(26, "shear", "%actor sheared %entity", new NoCapabilityHandler()),
     ENTITY_SPAWN(27, "spawn", "%entity spawned from %cause", new NoCapabilityHandler()),

@@ -30,5 +30,7 @@ public interface StorageMethod {
 
     SnitchWorld getWorld(int worldID);
 
+    void markReverted(SnitchEntry entry, boolean reverted) throws SQLException;
+
     void closeConnection() throws IOException;
 }

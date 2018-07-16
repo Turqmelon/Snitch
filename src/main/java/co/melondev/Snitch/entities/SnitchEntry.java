@@ -18,8 +18,9 @@ public class SnitchEntry {
     private SnitchPosition snitchPosition;
     private long timestamp;
     private JsonObject data;
+    private boolean reverted;
 
-    public SnitchEntry(int id, EnumAction action, SnitchPlayer snitchPlayer, SnitchWorld snitchWorld, SnitchPosition snitchPosition, long timestamp, JsonObject data) {
+    public SnitchEntry(int id, EnumAction action, SnitchPlayer snitchPlayer, SnitchWorld snitchWorld, SnitchPosition snitchPosition, long timestamp, JsonObject data, boolean reverted) {
         this.id = id;
         this.action = action;
         this.snitchPlayer = snitchPlayer;
@@ -27,6 +28,7 @@ public class SnitchEntry {
         this.snitchPosition = snitchPosition;
         this.timestamp = timestamp;
         this.data = data;
+        this.reverted = reverted;
     }
 
     public SnitchEntry(ResultSet set) throws SQLException {
@@ -37,6 +39,7 @@ public class SnitchEntry {
         this.snitchPosition = new SnitchPosition(set);
         this.timestamp = set.getLong("timestamp");
         this.data = new JsonParser().parse(set.getString("data")).getAsJsonObject();
+        this.reverted = set.getInt("is_reverted") == 1;
     }
 
     public long getTimestamp() {
@@ -45,12 +48,13 @@ public class SnitchEntry {
 
     public String getDescriptor() {
         String base = getAction().getExplained();
+        String crossout = isReverted() ? "§m" : "";
 
-        base = base.replace("%actor", "§6" + getSnitchPlayer().getPlayerName() + "§7");
+        base = base.replace("%actor", "§6" + crossout + getSnitchPlayer().getPlayerName() + "§7" + crossout);
 
         for(EnumActionVariables var : EnumActionVariables.values()){
             if (data.has(var.getKey())){
-                base = base.replace("%" + var.getKey(), "§6" + var.getReplacement(data.get(var.getKey()).getAsJsonObject()) + "§7");
+                base = base.replace("%" + var.getKey(), "§6" + crossout + var.getReplacement(data.get(var.getKey()).getAsJsonObject()) + "§7" + crossout);
             }
         }
 
@@ -58,7 +62,11 @@ public class SnitchEntry {
     }
 
     public boolean isReverted(){
-        return false;
+        return reverted;
+    }
+
+    public void setReverted(boolean reverted) {
+        this.reverted = reverted;
     }
 
     public int getId() {

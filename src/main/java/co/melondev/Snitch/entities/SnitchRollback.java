@@ -26,7 +26,11 @@ public class SnitchRollback extends SnitchPreview {
             long diff = System.currentTimeMillis() - startTime;
             player.sendMessage(MsgUtil.success("Rollback successfully completed in " + diff + "ms."));
             player.sendMessage(MsgUtil.record("Total Changes: " + result.getApplied() + "§c§o (" + result.getFailed() + " Failed)"));
+            if (!result.getMovedEntities().isEmpty()) {
+                player.sendMessage(MsgUtil.record(result.getMovedEntities().size() + "+ entities were moved to safety"));
+            }
             player.sendMessage(MsgUtil.record("If you made a mistake, you can §e/snitch restore <param>§7."));
+            MsgUtil.staff("§f" + player.getName() + "§b performed a rollback: §f" + result.getQuery().getSearchSummary());
         }
     }
 

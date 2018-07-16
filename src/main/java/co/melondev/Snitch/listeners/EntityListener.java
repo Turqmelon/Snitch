@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -74,20 +75,20 @@ public class EntityListener implements Listener {
         });
     }
 
-    private void logBlockAction(Player player, Block block, EnumAction action){
+    private void logBlockAction(Player player, BlockState block, EnumAction action) {
         logBlockAction(player, block, action, null);
     }
 
-    private void logBlockAction(Player player, Block block, EnumAction action, JsonObject data){
+    private void logBlockAction(Player player, BlockState block, EnumAction action, JsonObject data) {
         i.async(()->{
             try {
                 SnitchPlayer snitchPlayer = i.getStorage().getPlayer(player.getUniqueId());
                 SnitchWorld world = i.getStorage().register(block.getWorld());
-                SnitchPosition position = new SnitchPosition(block);
+                SnitchPosition position = new SnitchPosition(block.getLocation());
                 JsonObject d = data;
                 if (d == null) {
                     d = new JsonObject();
-                    d.add("block", JsonUtil.jsonify(block.getState()));
+                    d.add("block", JsonUtil.jsonify(block));
                 }
                 i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
             } catch (SQLException ex) {
@@ -217,7 +218,7 @@ public class EntityListener implements Listener {
         }
         if (actor != null && EnumAction.BLOCK_EXPLODE.isEnabled()){
             for(Block block : event.blockList()){
-                logBlockAction(actor, block, EnumAction.BLOCK_EXPLODE);
+                logBlockAction(actor, block.getState(), EnumAction.BLOCK_EXPLODE);
             }
         }
         logAction(defaultActor, entity, entity.getLocation(), EnumAction.ENTITY_EXPLODE);

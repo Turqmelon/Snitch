@@ -26,6 +26,10 @@ public class SnitchRestore extends SnitchPreview {
             long diff = System.currentTimeMillis() - startTime;
             player.sendMessage(MsgUtil.success("Restore successfully completed in " + diff + "ms."));
             player.sendMessage(MsgUtil.record("Total Changes: " + result.getApplied() + "§c§o (" + result.getFailed() + " Failed)"));
+            if (!result.getMovedEntities().isEmpty()) {
+                player.sendMessage(MsgUtil.record(result.getMovedEntities().size() + "+ entities were moved to safety"));
+            }
+            MsgUtil.staff("§f" + player.getName() + "§b performed a restore: §f" + result.getQuery().getSearchSummary());
         }
     }
 }

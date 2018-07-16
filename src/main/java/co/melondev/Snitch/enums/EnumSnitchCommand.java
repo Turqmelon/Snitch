@@ -7,6 +7,7 @@ import co.melondev.Snitch.util.BlockUtil;
 import co.melondev.Snitch.util.MsgUtil;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.math.NumberUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -329,12 +330,15 @@ public enum EnumSnitchCommand {
                     }
                 }
 
-                List<AdjustedBlock> changed = BlockUtil.removeNear(Arrays.asList(Material.WATER, Material.STATIONARY_WATER, Material.LAVA, Material.STATIONARY_LAVA), player.getLocation(), range);
-                if (changed.isEmpty()) {
-                    sender.sendMessage(MsgUtil.error("There were no liquids to drain withn " + range + " blocks. You can try a larger radius with \"/snitch dr <radius>\"."));
-                } else {
-                    sender.sendMessage(MsgUtil.success("Drained " + changed.size() + " liquids within " + range + " blocks."));
-                }
+                int finalRange = range;
+                Bukkit.getServer().getScheduler().runTask(SnitchPlugin.getInstance(), () -> {
+                    List<AdjustedBlock> changed = BlockUtil.removeNear(Arrays.asList(Material.WATER, Material.STATIONARY_WATER, Material.LAVA, Material.STATIONARY_LAVA), player.getLocation(), finalRange);
+                    if (changed.isEmpty()) {
+                        sender.sendMessage(MsgUtil.error("There were no liquids to drain withn " + finalRange + " blocks. You can try a larger radius with \"/snitch dr <radius>\"."));
+                    } else {
+                        sender.sendMessage(MsgUtil.success("Drained " + changed.size() + " liquids within " + finalRange + " blocks."));
+                    }
+                });
 
             } else {
                 sender.sendMessage(MsgUtil.error("You must be a player to use the extinguish command."));
@@ -357,12 +361,15 @@ public enum EnumSnitchCommand {
                     }
                 }
 
-                List<AdjustedBlock> changed = BlockUtil.removeNear(Arrays.asList(Material.FIRE), player.getLocation(), range);
-                if (changed.isEmpty()) {
-                    sender.sendMessage(MsgUtil.error("There were no fires to extinguish withn " + range + " blocks. You can try a larger radius with \"/snitch ex <radius>\"."));
-                } else {
-                    sender.sendMessage(MsgUtil.success("Extinguished " + changed.size() + " fires within " + range + " blocks."));
-                }
+                int finalRange = range;
+                Bukkit.getServer().getScheduler().runTask(SnitchPlugin.getInstance(), () -> {
+                    List<AdjustedBlock> changed = BlockUtil.removeNear(Arrays.asList(Material.FIRE), player.getLocation(), finalRange);
+                    if (changed.isEmpty()) {
+                        sender.sendMessage(MsgUtil.error("There were no fires to extinguish withn " + finalRange + " blocks. You can try a larger radius with \"/snitch ex <radius>\"."));
+                    } else {
+                        sender.sendMessage(MsgUtil.success("Extinguished " + changed.size() + " fires within " + finalRange + " blocks."));
+                    }
+                });
 
             } else {
                 sender.sendMessage(MsgUtil.error("You must be a player to use the extinguish command."));
