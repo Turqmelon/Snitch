@@ -1,5 +1,6 @@
 package co.melondev.Snitch.storage;
 
+import co.melondev.Snitch.SnitchPlugin;
 import co.melondev.Snitch.entities.*;
 import co.melondev.Snitch.enums.EnumAction;
 import com.google.common.cache.Cache;
@@ -20,6 +21,8 @@ import java.util.concurrent.TimeUnit;
  */
 @SuppressWarnings("Duplicates")
 public class MySQLStorage implements StorageMethod {
+
+    private final String SCHEMA_VERSION = "ALPHA-1.0.0";
 
     private MySQLDataSource dataSource;
 
@@ -45,6 +48,8 @@ public class MySQLStorage implements StorageMethod {
         this.database = database;
         this.tablePrefix = tablePrefix;
         this.dataSource = new MySQLDataSource();
+        this.setupTables();
+        this.updateSchemaVersion();
         this.loadWorlds();
     }
 
@@ -327,6 +332,79 @@ public class MySQLStorage implements StorageMethod {
     @Override
     public SnitchWorld getWorld(int worldID) {
         return worldIdMap.getOrDefault(worldID, null);
+    }
+
+    private void setupTables() throws SQLException {
+        try (Connection conn = getConnection()) {
+            try (PreparedStatement prep = conn.prepareStatement("CREATE TABLE IF NOT EXISTS " + tble("logs") + " (`id` INT(11) NOT NULL AUTO_INCREMENT,`action_id` INT(11) DEFAULT NULL,`player_id` INT(11) DEFAULT NULL,`world_id` INT(11) DEFAULT NULL,`pos_x` INT(11) DEFAULT NULL,`pos_y` INT(11) DEFAULT NULL,`pos_z` INT(11) DEFAULT NULL,`timestamp` BIGINT(20) DEFAULT NULL,`data` BLOB,`is_reverted` INT(11) DEFAULT '0', PRIMARY KEY (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1")) {
+                prep.execute();
+            }
+            try (PreparedStatement prep = conn.prepareStatement("CREATE TABLE IF NOT EXISTS " + tble("meta") + " (\n" +
+                    "  `id` int(11) NOT NULL AUTO_INCREMENT,\n" +
+                    "  `setting` varchar(255) NOT NULL,\n" +
+                    "  `setting_value` varchar(255) NOT NULL,\n" +
+                    "  PRIMARY KEY (`id`)\n" +
+                    ") ENGINE=InnoDB DEFAULT CHARSET=latin1\n" +
+                    "\n")) {
+                prep.execute();
+            }
+            try (PreparedStatement prep = conn.prepareStatement("CREATE TABLE IF NOT EXISTS " + tble("players") + " (\n" +
+                    "  `id` INT(11) NOT NULL AUTO_INCREMENT,\n" +
+                    "  `player_name` VARCHAR(255) DEFAULT NULL,\n" +
+                    "  `uuid` VARCHAR(255) DEFAULT NULL,\n" +
+                    "  `first_seen` BIGINT(20) DEFAULT NULL,\n" +
+                    "  `last_seen` BIGINT(20) DEFAULT NULL,\n" +
+                    "  PRIMARY KEY (`id`)\n" +
+                    ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1\n" +
+                    "\n")) {
+                prep.execute();
+            }
+            try (PreparedStatement prep = conn.prepareStatement("" +
+                    "CREATE TABLE " + tble("worlds") + " (\n" +
+                    "  `id` int(11) NOT NULL AUTO_INCREMENT,\n" +
+                    "  `world_name` varchar(255) DEFAULT NULL,\n" +
+                    "  PRIMARY KEY (`id`)\n" +
+                    ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1\n" +
+                    "\n")) {
+                prep.execute();
+            }
+        }
+
+    }
+
+    private void updateSchemaVersion() throws SQLException {
+        String v = getRemoteSchemaVersion();
+        if (v == null || !v.equals(SCHEMA_VERSION)) {
+            if (v != null) {
+                try (Connection conn = getConnection(); PreparedStatement upd = conn.prepareStatement("" +
+                        "UPDATE " + tble("meta") + " SET setting_value = ? WHERE setting = ?")) {
+                    upd.setString(1, SCHEMA_VERSION);
+                    upd.setString(2, "schema_version");
+                    upd.execute();
+                }
+            } else {
+                try (Connection conn = getConnection(); PreparedStatement ins = conn.prepareStatement("" +
+                        "INSERT INTO " + tble("meta") + " (setting, setting_value) VALUES (?, ?)")) {
+                    ins.setString(1, "schema_version");
+                    ins.setString(2, SCHEMA_VERSION);
+                    ins.execute();
+                }
+            }
+            SnitchPlugin.getInstance().getLogger().info("Updated schema version to " + SCHEMA_VERSION);
+        }
+    }
+
+    private String getRemoteSchemaVersion() throws SQLException {
+        try (Connection conn = getConnection(); PreparedStatement sel = conn.prepareStatement("" +
+                "SELECT setting_value FROM " + tble("meta") + " WHERE setting = ? LIMIT 1")) {
+            sel.setString(1, "schema_version");
+            try (ResultSet set = sel.executeQuery()) {
+                if (set.next()) {
+                    return set.getString("setting_value");
+                }
+            }
+        }
+        return null;
     }
 
     @Override
