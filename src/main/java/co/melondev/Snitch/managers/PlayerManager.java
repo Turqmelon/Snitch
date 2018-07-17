@@ -20,7 +20,7 @@ public class PlayerManager {
         this.i = instance;
         try {
             this.registerDefaultPlayers();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -33,7 +33,7 @@ public class PlayerManager {
         return sessionCache.getIfPresent(player.getUniqueId());
     }
 
-    private void registerDefaultPlayers() throws SQLException {
+    private void registerDefaultPlayers() throws Exception {
         for(EnumDefaultPlayer defaultPlayer : EnumDefaultPlayer.values()){
             i.getStorage().registerPlayer(defaultPlayer.getStorageName(), defaultPlayer.getUuid());
         }

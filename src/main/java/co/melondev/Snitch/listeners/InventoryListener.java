@@ -49,7 +49,7 @@ public class InventoryListener implements Listener {
                     d.add("item", JsonUtil.jsonify(itemStack));
                 }
                 i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
-            } catch (SQLException ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         });

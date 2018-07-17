@@ -25,7 +25,7 @@ public enum EnumParam {
 
     PLAYER(Arrays.asList("player", "players", "p"), "player Turqmelon") {
         @Override
-        public void parse(Player player, SnitchQuery query, String[] values) throws SQLException {
+        public void parse(Player player, SnitchQuery query, String[] values) throws Exception {
             for (String playerName : values) {
                 SnitchPlayer pl = SnitchPlugin.getInstance().getStorage().getPlayer(playerName);
                 Validate.notNull(pl, "Unknown player: " + playerName);
@@ -35,7 +35,7 @@ public enum EnumParam {
     },
     ACTION(Arrays.asList("action", "actions", "a"), "action break") {
         @Override
-        public void parse(Player player, SnitchQuery query, String[] values) throws SQLException {
+        public void parse(Player player, SnitchQuery query, String[] values) {
             for (String action : values) {
                 List<EnumAction> results = EnumAction.getByName(action);
                 Validate.notEmpty(results, "Unknown action: " + action);
@@ -47,7 +47,7 @@ public enum EnumParam {
     },
     SINCE(Arrays.asList("since", "from", "s"), "since 1d") {
         @Override
-        public void parse(Player player, SnitchQuery query, String[] values) throws SQLException {
+        public void parse(Player player, SnitchQuery query, String[] values) {
             Validate.notEmpty(values, "No time specified for " + name() + ".");
             Validate.isTrue(values.length == 1, "Multiple time values provided for " + name() + ".");
             query.setSinceTime(EnumParam.getUnixTime(values[0], false));
@@ -55,7 +55,7 @@ public enum EnumParam {
     },
     BEFORE(Arrays.asList("before", "prior", "b"), "before 06/12/18") {
         @Override
-        public void parse(Player player, SnitchQuery query, String[] values) throws SQLException {
+        public void parse(Player player, SnitchQuery query, String[] values) {
             Validate.notEmpty(values, "No time specified for " + name() + ".");
             Validate.isTrue(values.length == 1, "Multiple time values provided for " + name() + ".");
             query.setBeforeTime(EnumParam.getUnixTime(values[0], false));
@@ -63,7 +63,7 @@ public enum EnumParam {
     },
     WORLD(Arrays.asList("world", "w"), "world world_nether") {
         @Override
-        public void parse(Player player, SnitchQuery query, String[] values) throws SQLException {
+        public void parse(Player player, SnitchQuery query, String[] values) throws Exception {
             Validate.notEmpty(values, "No world specified.");
             Validate.isTrue(values.length == 1, "Multiple world values provided.");
             World world = Bukkit.getWorld(values[0]);
@@ -74,7 +74,7 @@ public enum EnumParam {
     },
     COORDS(Arrays.asList("coords", "relative", "pos", "position"), "relative 100 150 100") {
         @Override
-        public void parse(Player player, SnitchQuery query, String[] values) throws SQLException {
+        public void parse(Player player, SnitchQuery query, String[] values) throws Exception {
             Validate.isTrue(values.length == 3, "Specify an x, y, and z value.");
             try {
                 int x = Integer.parseInt(values[0]);
@@ -91,7 +91,7 @@ public enum EnumParam {
     },
     RADIUS(Arrays.asList("area", "radius", "range"), "area 20") {
         @Override
-        public void parse(Player player, SnitchQuery query, String[] values) throws SQLException {
+        public void parse(Player player, SnitchQuery query, String[] values) throws Exception {
             Validate.notEmpty(values, "No range specified.");
             Validate.isTrue(values.length == 1, "Multiple range values specified.");
             try {
@@ -151,6 +151,6 @@ public enum EnumParam {
         return keywords;
     }
 
-    public abstract void parse(Player player, SnitchQuery query, String[] values) throws SQLException;
+    public abstract void parse(Player player, SnitchQuery query, String[] values) throws Exception;
 
 }

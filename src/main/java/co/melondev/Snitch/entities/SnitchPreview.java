@@ -126,7 +126,7 @@ public class SnitchPreview implements Previewable {
                                         SnitchPlugin.getInstance().async(() -> {
                                             try {
                                                 SnitchPlugin.getInstance().getStorage().markReverted(entry, true);
-                                            } catch (SQLException e) {
+                                            } catch (Exception e) {
                                                 e.printStackTrace();
                                             }
                                         });
@@ -134,7 +134,7 @@ public class SnitchPreview implements Previewable {
                                         SnitchPlugin.getInstance().async(() -> {
                                             try {
                                                 SnitchPlugin.getInstance().getStorage().markReverted(entry, false);
-                                            } catch (SQLException e) {
+                                            } catch (Exception e) {
                                                 e.printStackTrace();
                                             }
                                         });

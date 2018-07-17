@@ -44,7 +44,7 @@ public class ChatListener implements Listener {
                     d.addProperty("message", ChatColor.stripColor(message));
                 }
                 i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
-            } catch (SQLException ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         });

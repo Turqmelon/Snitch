@@ -32,7 +32,7 @@ public class SnitchEntry {
         this.reverted = reverted;
     }
 
-    public SnitchEntry(ResultSet set) throws SQLException {
+    public SnitchEntry(ResultSet set) throws Exception {
         this.id = set.getInt("id");
         this.action = EnumAction.getById(set.getInt("action_id"));
         this.snitchPlayer = SnitchPlugin.getInstance().getStorage().getPlayer(set.getInt("player_id"));

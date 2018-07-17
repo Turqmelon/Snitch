@@ -5,6 +5,8 @@ import co.melondev.Snitch.entities.*;
 import co.melondev.Snitch.enums.EnumAction;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import com.zaxxer.hikari.HikariDataSource;
@@ -14,6 +16,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -36,9 +39,70 @@ public class MySQLStorage implements StorageMethod {
     private Map<String, SnitchWorld> worldNameMap = new HashMap<>();
     private Map<Integer, SnitchWorld> worldIdMap = new HashMap<>();
 
-    private Cache<Integer, SnitchPlayer> playerIDCache = CacheBuilder.newBuilder().concurrencyLevel(4).expireAfterAccess(1, TimeUnit.MINUTES).build();
-    private Cache<String, SnitchPlayer> playerNameCache = CacheBuilder.newBuilder().concurrencyLevel(4).expireAfterAccess(1, TimeUnit.MINUTES).build();
-    private Cache<UUID, SnitchPlayer> playerUUIDCache = CacheBuilder.newBuilder().concurrencyLevel(4).expireAfterAccess(1, TimeUnit.MINUTES).build();
+    private final LoadingCache<Integer, SnitchPlayer> playerIDCache = CacheBuilder
+            .newBuilder()
+            .expireAfterAccess(1, TimeUnit.MINUTES)
+            .build(new CacheLoader<Integer, SnitchPlayer>() {
+                @Override
+                public SnitchPlayer load(Integer playerId) throws Exception {
+                    try (Connection conn = getConnection(); PreparedStatement sel = conn.prepareStatement("SELECT * FROM " + tble("players") + " WHERE id = ? LIMIT 1")) {
+                        sel.setInt(1, playerId);
+                        try (ResultSet set = sel.executeQuery()) {
+                            if (set.next()) {
+                                SnitchPlayer snitchPlayer = new SnitchPlayer(set);
+                                cache(snitchPlayer);
+
+                                return snitchPlayer;
+                            }
+                        }
+                    }
+
+                    return null;
+                }
+            });
+
+    private final LoadingCache<String, SnitchPlayer> playerNameCache = CacheBuilder
+            .newBuilder()
+            .expireAfterAccess(1, TimeUnit.MINUTES)
+            .build(new CacheLoader<String, SnitchPlayer>() {
+                @Override
+                public SnitchPlayer load(String playerName) throws Exception {
+                    try (Connection conn = getConnection(); PreparedStatement sel = conn.prepareStatement("SELECT * FROM " + tble("players") + " WHERE player_name = ? LIMIT 1")) {
+                        sel.setString(1, playerName);
+                        try (ResultSet set = sel.executeQuery()) {
+                            if (set.next()) {
+                                SnitchPlayer snitchPlayer = new SnitchPlayer(set);
+                                cache(snitchPlayer);
+
+                                return snitchPlayer;
+                            }
+                        }
+                    }
+
+                    return null;
+                }
+            });
+
+    private final LoadingCache<UUID, SnitchPlayer> playerUUIDCache = CacheBuilder
+            .newBuilder()
+            .expireAfterAccess(1, TimeUnit.MINUTES)
+            .build(new CacheLoader<UUID, SnitchPlayer>() {
+                @Override
+                public SnitchPlayer load(UUID uuid) throws Exception {
+                    try (Connection conn = getConnection(); PreparedStatement sel = conn.prepareStatement("SELECT * FROM " + tble("players") + " WHERE uuid = ? LIMIT 1")) {
+                        sel.setString(1, uuid.toString());
+                        try (ResultSet set = sel.executeQuery()) {
+                            if (set.next()) {
+                                SnitchPlayer snitchPlayer = new SnitchPlayer(set);
+                                cache(snitchPlayer);
+
+                                return snitchPlayer;
+                            }
+                        }
+                    }
+
+                    return null;
+            }});
 
     public MySQLStorage(String host, int port, String username, String password, String database, String tablePrefix) throws SQLException {
         this.host = host;
@@ -190,9 +254,9 @@ public class MySQLStorage implements StorageMethod {
     }
 
     @Override
-    public SnitchPlayer registerPlayer(String playerName, UUID uuid) throws SQLException {
-
+    public SnitchPlayer registerPlayer(String playerName, UUID uuid) throws Exception {
         SnitchPlayer cached = playerUUIDCache.getIfPresent(uuid);
+
         if (cached != null) {
             if (!cached.getPlayerName().equals(playerName)) {
                 cached.setPlayerName(playerName);
@@ -236,41 +300,13 @@ public class MySQLStorage implements StorageMethod {
     }
 
     @Override
-    public SnitchPlayer getPlayer(UUID uuid) throws SQLException {
-        SnitchPlayer pl = playerUUIDCache.getIfPresent(uuid);
-        if (pl != null) {
-            return pl;
-        }
-        try (Connection conn = getConnection(); PreparedStatement sel = conn.prepareStatement("SELECT * FROM " + tble("players") + " WHERE uuid = ? LIMIT 1")) {
-            sel.setString(1, uuid.toString());
-            try (ResultSet set = sel.executeQuery()) {
-                if (set.next()) {
-                    pl = new SnitchPlayer(set);
-                    cache(pl);
-                    return pl;
-                }
-            }
-        }
-        return null;
+    public SnitchPlayer getPlayer(UUID uuid) throws ExecutionException {
+        return playerUUIDCache.get(uuid);
     }
 
     @Override
-    public SnitchPlayer getPlayer(String playerName) throws SQLException {
-        SnitchPlayer pl = playerUUIDCache.getIfPresent(playerName.toLowerCase());
-        if (pl != null) {
-            return pl;
-        }
-        try (Connection conn = getConnection(); PreparedStatement sel = conn.prepareStatement("SELECT * FROM " + tble("players") + " WHERE player_name = ? LIMIT 1")) {
-            sel.setString(1, playerName);
-            try (ResultSet set = sel.executeQuery()) {
-                if (set.next()) {
-                    pl = new SnitchPlayer(set);
-                    cache(pl);
-                    return pl;
-                }
-            }
-        }
-        return null;
+    public SnitchPlayer getPlayer(String playerName) throws ExecutionException {
+        return playerNameCache.get(playerName.toLowerCase());
     }
 
     @Override
@@ -297,7 +333,7 @@ public class MySQLStorage implements StorageMethod {
     }
 
     @Override
-    public ImmutableList<SnitchEntry> performLookup(SnitchQuery query) throws SQLException {
+    public ImmutableList<SnitchEntry> performLookup(SnitchQuery query) throws Exception {
         List<SnitchEntry> results = new ArrayList<>();
         String sql = buildLookupQuery(query);
         try (Connection conn = getConnection(); PreparedStatement sel = conn.prepareStatement(sql)) {
@@ -311,22 +347,8 @@ public class MySQLStorage implements StorageMethod {
     }
 
     @Override
-    public SnitchPlayer getPlayer(int playerID) throws SQLException {
-        SnitchPlayer cached = playerIDCache.getIfPresent(playerID);
-        if (cached != null) {
-            return cached;
-        }
-        try (Connection conn = getConnection(); PreparedStatement sel = conn.prepareStatement("SELECT * FROM " + tble("players") + " WHERE id = ? LIMIT 1")) {
-            sel.setInt(1, playerID);
-            try (ResultSet set = sel.executeQuery()) {
-                if (set.next()) {
-                    SnitchPlayer snitchPlayer = new SnitchPlayer(set);
-                    cache(snitchPlayer);
-                    return snitchPlayer;
-                }
-            }
-        }
-        return null;
+    public SnitchPlayer getPlayer(int playerID) throws ExecutionException {
+        return playerIDCache.get(playerID);
     }
 
     @Override

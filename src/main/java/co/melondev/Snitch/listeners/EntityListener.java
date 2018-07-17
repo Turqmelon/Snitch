@@ -54,7 +54,7 @@ public class EntityListener implements Listener {
                     d.add("entity", JsonUtil.jsonify(entity));
                 }
                 i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
-            } catch (SQLException ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         });
@@ -76,7 +76,7 @@ public class EntityListener implements Listener {
                     d.add("entity", JsonUtil.jsonify(entity));
                 }
                 i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
-            } catch (SQLException ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         });
@@ -98,7 +98,7 @@ public class EntityListener implements Listener {
                     d.add("block", JsonUtil.jsonify(block));
                 }
                 i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
-            } catch (SQLException ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         });

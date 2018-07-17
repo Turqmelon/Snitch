@@ -53,7 +53,7 @@ public class SnitchQuery {
         return this;
     }
 
-    public SnitchQuery inWorld(World world) throws SQLException {
+    public SnitchQuery inWorld(World world) throws Exception {
         return inWorld(SnitchPlugin.getInstance().getStorage().register(world));
     }
 
@@ -146,7 +146,7 @@ public class SnitchQuery {
         return EnumParam.getByKeyword(s) != null;
     }
 
-    public boolean parseParams(Player player, List<String> arguments) throws SQLException {
+    public boolean parseParams(Player player, List<String> arguments) throws Exception {
 
         if (arguments.isEmpty()) {
             throw new IllegalArgumentException("No params specified.");

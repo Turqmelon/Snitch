@@ -25,7 +25,7 @@ public enum EnumDefaultPlayer {
         this.uuid = UUID.fromString(uuid);
     }
 
-    public SnitchPlayer getSnitchPlayer() throws SQLException {
+    public SnitchPlayer getSnitchPlayer() throws Exception {
         return SnitchPlugin.getInstance().getStorage().getPlayer(getStorageName());
     }
 
