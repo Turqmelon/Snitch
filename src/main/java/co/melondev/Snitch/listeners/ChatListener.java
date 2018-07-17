@@ -1,4 +1,4 @@
-package co.melondev.Snitch.handlers;
+package co.melondev.Snitch.listeners;
 
 import co.melondev.Snitch.SnitchPlugin;
 import co.melondev.Snitch.entities.SnitchPlayer;

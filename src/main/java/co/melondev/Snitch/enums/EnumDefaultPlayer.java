@@ -15,7 +15,8 @@ public enum EnumDefaultPlayer {
     FIRE("Fire", "123e4567-e89b-42d3-a456-556642440005"),
     BLOCK("Block", "123e4567-e89b-42d3-a456-556642440006"),
     TNT("TNT", "123e4567-e89b-42d3-a456-556642440007"),
-    CREEPER("Creeper", "123e4567-e89b-42d3-a456-556642440008");
+    CREEPER("Creeper", "123e4567-e89b-42d3-a456-556642440008"),
+    HOPPER("Hopper", "123e4567-e89b-42d3-a456-556642440009");
 
     private String name;
     private UUID uuid;

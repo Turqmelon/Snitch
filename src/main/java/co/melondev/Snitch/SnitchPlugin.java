@@ -1,11 +1,7 @@
 package co.melondev.Snitch;
 
 import co.melondev.Snitch.commands.SnitchCommand;
-import co.melondev.Snitch.handlers.ChatListener;
-import co.melondev.Snitch.listeners.BlockListener;
-import co.melondev.Snitch.listeners.ConnectionListener;
-import co.melondev.Snitch.listeners.EntityListener;
-import co.melondev.Snitch.listeners.InventoryListener;
+import co.melondev.Snitch.listeners.*;
 import co.melondev.Snitch.managers.PlayerManager;
 import co.melondev.Snitch.storage.MySQLStorage;
 import co.melondev.Snitch.storage.StorageMethod;

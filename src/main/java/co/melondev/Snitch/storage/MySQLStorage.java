@@ -360,7 +360,7 @@ public class MySQLStorage implements StorageMethod {
                 prep.execute();
             }
             try (PreparedStatement prep = conn.prepareStatement("" +
-                    "CREATE TABLE " + tble("worlds") + " (\n" +
+                    "CREATE TABLE IF NOT EXISTS " + tble("worlds") + " (\n" +
                     "  `id` int(11) NOT NULL AUTO_INCREMENT,\n" +
                     "  `world_name` varchar(255) DEFAULT NULL,\n" +
                     "  PRIMARY KEY (`id`)\n" +
