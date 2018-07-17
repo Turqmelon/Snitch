@@ -1,14 +1,29 @@
 package co.melondev.Snitch.util;
 
+import co.melondev.Snitch.enums.EnumAction;
+import co.melondev.Snitch.listeners.InventoryListener;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.server.v1_12_R1.MojangsonParseException;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Created by Devon on 7/16/18.
  */
 public class InvUtil {
+
+    public static void logContentsAsRemoval(Player player, Inventory inventory, Location location) {
+        if (!EnumAction.ITEM_TAKE.isEnabled()) return;
+        for (int i = 0; i < inventory.getSize(); i++) {
+            ItemStack itemStack = inventory.getItem(i);
+            if (itemStack != null) {
+                InventoryListener.logAction(player, location, itemStack.clone(), EnumAction.ITEM_TAKE, i, null);
+            }
+        }
+    }
 
     public static void syncInventory(Inventory inventory, JsonObject invData) {
         for (int i = 0; i < inventory.getSize(); i++) {
@@ -18,7 +33,8 @@ public class InvUtil {
                     inventory.setItem(i, null);
                 } else {
                     try {
-                        inventory.setItem(i, ItemUtil.JSONtoItemStack(element.getAsString()));
+                        ItemStack itemStack = ItemUtil.JSONtoItemStack(element.getAsString());
+                        inventory.setItem(i, itemStack);
                     } catch (MojangsonParseException e) {
                         e.printStackTrace();
                     }

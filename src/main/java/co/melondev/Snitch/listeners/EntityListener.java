@@ -6,6 +6,7 @@ import co.melondev.Snitch.entities.SnitchPosition;
 import co.melondev.Snitch.entities.SnitchWorld;
 import co.melondev.Snitch.enums.EnumAction;
 import co.melondev.Snitch.enums.EnumDefaultPlayer;
+import co.melondev.Snitch.util.InvUtil;
 import co.melondev.Snitch.util.ItemUtil;
 import co.melondev.Snitch.util.JsonUtil;
 import com.google.gson.JsonObject;
@@ -27,6 +28,7 @@ import org.bukkit.event.vehicle.VehicleCreateEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
+import org.bukkit.inventory.InventoryHolder;
 
 import java.sql.SQLException;
 
@@ -385,6 +387,9 @@ public class EntityListener implements Listener {
         }
         if (actor != null && EnumAction.BLOCK_EXPLODE.isEnabled()){
             for(Block block : event.blockList()){
+                if ((block.getState() instanceof InventoryHolder)) {
+                    InvUtil.logContentsAsRemoval(actor, ((InventoryHolder) block.getState()).getInventory(), block.getLocation());
+                }
                 logBlockAction(actor, block.getState(), EnumAction.BLOCK_EXPLODE);
             }
         }

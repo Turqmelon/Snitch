@@ -8,7 +8,6 @@ import org.bukkit.block.banner.Pattern;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.entity.minecart.CommandMinecart;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Colorable;
 import org.bukkit.material.MaterialData;
@@ -279,14 +278,6 @@ public class JsonUtil {
         return obj;
     }
 
-    public static JsonObject jsonify(Inventory inventory) {
-        JsonObject obj = new JsonObject();
-        for (int i = 0; i < inventory.getSize(); i++) {
-            obj.addProperty("slot" + i, ItemUtil.itemToJSON(inventory.getItem(i)));
-        }
-        return obj;
-    }
-
     public static JsonObject jsonify(BlockState block) {
         JsonObject obj = new JsonObject();
         obj.addProperty("type", block.getType().name());
@@ -309,11 +300,6 @@ public class JsonUtil {
         if ((block instanceof BrewingStand)) {
             obj.addProperty("brewingTime", ((BrewingStand) block).getBrewingTime());
             obj.addProperty("fuelLevel", ((BrewingStand) block).getFuelLevel());
-            obj.add("inventory", jsonify(((BrewingStand) block).getSnapshotInventory()));
-        }
-        if ((block instanceof Container)) {
-            Container container = (Container) block;
-            obj.add("inventory", jsonify(container.getSnapshotInventory()));
         }
         if ((block instanceof Lockable)) {
             Lockable lock = (Lockable) block;
@@ -322,9 +308,6 @@ public class JsonUtil {
         if ((block instanceof CommandBlock)) {
             obj.addProperty("name", ((CommandBlock) block).getName());
             obj.addProperty("command", ((CommandBlock) block).getCommand());
-        }
-        if ((block instanceof Chest)) {
-            obj.add("inventory", jsonify(((Chest) block).getBlockInventory()));
         }
         if ((block instanceof CreatureSpawner)) {
             CreatureSpawner spawner = (CreatureSpawner) block;
@@ -351,7 +334,6 @@ public class JsonUtil {
             Furnace furnace = (Furnace) block;
             obj.addProperty("cookTime", furnace.getCookTime());
             obj.addProperty("burnTime", furnace.getBurnTime());
-            obj.add("inventory", jsonify(furnace.getSnapshotInventory()));
         }
         if ((block instanceof NoteBlock)) {
             NoteBlock note = (NoteBlock) block;

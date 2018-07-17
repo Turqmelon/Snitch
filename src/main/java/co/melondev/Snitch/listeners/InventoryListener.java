@@ -39,15 +39,7 @@ public class InventoryListener implements Listener {
         this.i = i;
     }
 
-    private void logAction(EnumDefaultPlayer defaultPlayer, ItemStack itemStack, Location location, EnumAction action) {
-        logAction(defaultPlayer, itemStack, location, action, null);
-    }
-
-    private void logAction(Player player, ItemStack itemStack, Location location, EnumAction action){
-        logAction(player, itemStack, location, action, null);
-    }
-
-    private void logAction(Player player, Location location, ItemStack itemStack, EnumAction action, int slot, InventoryClickEvent event) {
+    public static void logAction(Player player, Location location, ItemStack itemStack, EnumAction action, int slot, InventoryClickEvent event) {
         if (action.isEnabled()) {
             int finalQty = itemStack.getAmount();
             if (event != null) {
@@ -70,10 +62,11 @@ public class InventoryListener implements Listener {
         }
     }
 
-    private void logAction(EnumDefaultPlayer defaultPlayer, ItemStack itemStack, Location location, EnumAction action, JsonObject data) {
+    public static void logAction(Player player, ItemStack itemStack, Location location, EnumAction action, JsonObject data) {
+        SnitchPlugin i = SnitchPlugin.getInstance();
         i.async(() -> {
             try {
-                SnitchPlayer snitchPlayer = defaultPlayer.getSnitchPlayer();
+                SnitchPlayer snitchPlayer = i.getStorage().getPlayer(player.getUniqueId());
                 SnitchWorld world = i.getStorage().register(location.getWorld());
                 SnitchPosition position = new SnitchPosition(location);
                 JsonObject d = data;
@@ -88,10 +81,18 @@ public class InventoryListener implements Listener {
         });
     }
 
-    private void logAction(Player player, ItemStack itemStack, Location location, EnumAction action, JsonObject data){
-        i.async(()->{
+    private void logAction(EnumDefaultPlayer defaultPlayer, ItemStack itemStack, Location location, EnumAction action) {
+        logAction(defaultPlayer, itemStack, location, action, null);
+    }
+
+    private void logAction(Player player, ItemStack itemStack, Location location, EnumAction action) {
+        logAction(player, itemStack, location, action, null);
+    }
+
+    private void logAction(EnumDefaultPlayer defaultPlayer, ItemStack itemStack, Location location, EnumAction action, JsonObject data) {
+        i.async(() -> {
             try {
-                SnitchPlayer snitchPlayer = i.getStorage().getPlayer(player.getUniqueId());
+                SnitchPlayer snitchPlayer = defaultPlayer.getSnitchPlayer();
                 SnitchWorld world = i.getStorage().register(location.getWorld());
                 SnitchPosition position = new SnitchPosition(location);
                 JsonObject d = data;
@@ -171,9 +172,10 @@ public class InventoryListener implements Listener {
                     if (taken != null) {
                         logAction(player, location, taken, EnumAction.ITEM_TAKE, rawSlot, event);
                     }
+                    return;
                 }
 
-                if (event.isShiftClick() && cursor != null && cursor.getType() != Material.AIR) {
+                if (event.isShiftClick() && current != null && current.getType() != Material.AIR) {
                     logAction(player, location, current, EnumAction.ITEM_INSERT, -1, event);
                 }
 

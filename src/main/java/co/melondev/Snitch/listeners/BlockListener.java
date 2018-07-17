@@ -4,6 +4,7 @@ import co.melondev.Snitch.SnitchPlugin;
 import co.melondev.Snitch.entities.*;
 import co.melondev.Snitch.enums.EnumAction;
 import co.melondev.Snitch.enums.EnumDefaultPlayer;
+import co.melondev.Snitch.util.InvUtil;
 import co.melondev.Snitch.util.JsonUtil;
 import co.melondev.Snitch.util.MsgUtil;
 import com.google.gson.JsonObject;
@@ -26,6 +27,7 @@ import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.sql.SQLException;
@@ -338,6 +340,9 @@ public class BlockListener implements Listener {
             return;
         final Player player = event.getPlayer();
         final Block block = event.getBlock();
+        if ((block.getState() instanceof InventoryHolder)) {
+            InvUtil.logContentsAsRemoval(player, ((InventoryHolder) block.getState()).getInventory(), block.getLocation());
+        }
         logBlockAction(player, block.getState(), EnumAction.BLOCK_BREAK);
         BlockFace[] faces = {BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.UP};
         for (BlockFace face : faces) {
@@ -349,6 +354,9 @@ public class BlockListener implements Listener {
                     (relative.getType() == Material.REDSTONE_COMPARATOR_OFF && face == BlockFace.UP) ||
                     relative.getType() == Material.WALL_SIGN ||
                     (relative.getType() == Material.SIGN_POST && face == BlockFace.UP)) {
+                if ((relative.getState() instanceof InventoryHolder)) {
+                    InvUtil.logContentsAsRemoval(player, ((InventoryHolder) relative.getState()).getInventory(), relative.getLocation());
+                }
                 logBlockAction(player, relative.getState(), EnumAction.BLOCK_BREAK);
             }
         }

@@ -26,6 +26,8 @@ public class BlockUtil {
         block.setTypeIdAndData(Material.valueOf(blockData.get("type").getAsString()).getId(),
                 blockData.get("data").getAsByte(), false);
         BlockState bs = block.getState();
+        bs.update();
+        bs = block.getState();
 
         if ((bs instanceof Banner)) {
             ((Banner) bs).setBaseColor(DyeColor.valueOf(blockData.get("baseColor").getAsString()));
