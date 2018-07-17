@@ -1,5 +1,7 @@
 # Snitch
-Snitch block logging and rollback
+Snitch block logging and rollback.
+
+**WARNING:** Snitch is still very much in development. We do not recommend using it on production servers at this time.
 
 ## Why Snitch?
 Snitch is the only block logging and rollback plugin that was built on the APIs of 1.12. This ensures that events that are not caught by other plugins, such as armor stand interaction, item frames, and many other specific details are logged and rolled back properly.
