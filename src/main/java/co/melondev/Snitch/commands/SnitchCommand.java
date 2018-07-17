@@ -70,7 +70,7 @@ public class SnitchCommand implements CommandExecutor {
 
             } catch (IllegalArgumentException ex) {
                 sender.sendMessage(MsgUtil.error(ex.getMessage()));
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 sender.sendMessage(MsgUtil.error("Internal database error. Check console for details."));
                 e.printStackTrace();
             }
