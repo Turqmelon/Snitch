@@ -189,7 +189,10 @@ public class BlockListener implements Listener {
                 logBlockAction(player, block.getState(), EnumAction.CAKE_EAT);
             }
 
-            if (player.hasMetadata("snitch-inspector")) {
+            ItemStack hand = player.getItemInHand();
+            if (player.hasMetadata("snitch-inspector") ||
+                    (player.hasPermission("snitch.tool") && hand != null &&
+                            (hand.getType() == i.getConfiguration().getWand() || hand.getType() == i.getConfiguration().getWandBlock()))) {
                 event.setCancelled(true);
                 Block target = block.getRelative(event.getBlockFace());
                 i.async(() -> {
