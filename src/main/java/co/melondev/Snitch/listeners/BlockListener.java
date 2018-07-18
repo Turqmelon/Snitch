@@ -139,7 +139,7 @@ public class BlockListener implements Listener {
         }
 
         final Player player = event.getPlayer();
-        final Block block = event.getBlockClicked();
+        final Block block = event.getBlockClicked().getRelative(event.getBlockFace());
         final Material material = event.getBucket();
         JsonObject obj = new JsonObject();
         obj.add("block", JsonUtil.jsonify(block.getState()));
