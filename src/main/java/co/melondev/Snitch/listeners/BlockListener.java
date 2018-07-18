@@ -185,6 +185,10 @@ public class BlockListener implements Listener {
         } else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Block block = event.getClickedBlock();
 
+            if (block.getType() == Material.CAKE_BLOCK && EnumAction.CAKE_EAT.isEnabled()) {
+                logBlockAction(player, block.getState(), EnumAction.CAKE_EAT);
+            }
+
             if (player.hasMetadata("snitch-inspector")) {
                 event.setCancelled(true);
                 Block target = block.getRelative(event.getBlockFace());
