@@ -204,7 +204,9 @@ public class BlockListener implements Listener {
                 });
             }
 
-            if (interactables.contains(block.getType()) && EnumAction.BLOCK_USE.isEnabled()){
+            if ((block.getState() instanceof InventoryHolder) && EnumAction.CONTAINER_ACCESS.isEnabled()) {
+                logBlockAction(player, block.getState(), EnumAction.CONTAINER_ACCESS);
+            } else if (interactables.contains(block.getType()) && EnumAction.BLOCK_USE.isEnabled()) {
                 logBlockAction(player, block.getState(), EnumAction.BLOCK_USE);
             }
         } else if (event.getAction() == Action.PHYSICAL){
