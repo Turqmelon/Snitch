@@ -1,4 +1,5 @@
-# Snitch
+![Logo](https://d3vv6lp55qjaqc.cloudfront.net/items/402j1g2B023f0d412u3K/GraphicText.png?X-CloudApp-Visitor-Id=1484866&v=247e27a7)
+
 Snitch block logging and rollback.
 
 **WARNING:** Snitch is still very much in development. We do not recommend using it on production servers at this time.
