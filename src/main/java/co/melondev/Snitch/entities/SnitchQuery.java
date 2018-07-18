@@ -11,12 +11,14 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SnitchQuery {
 
-    private List<SnitchPlayer> players = new ArrayList<>();
-    private List<EnumAction> actions = new ArrayList<>();
+    private Map<SnitchPlayer, Boolean> players = new HashMap<>();
+    private Map<EnumAction, Boolean> actions = new HashMap<>();
     private long since;
     private long before;
     private SnitchWorld world = null;
@@ -84,23 +86,59 @@ public class SnitchQuery {
 
     public String getSearchSummary() {
         StringBuilder d = new StringBuilder();
-        if (actions.isEmpty()) {
-            d.append("All actions from ");
+        List<EnumAction> excludedActions = getExcludedActions();
+        if (getActions().isEmpty()) {
+            d.append("All actions");
+            if (!excludedActions.isEmpty()) {
+                d.append(" except ");
+                List<String> names = new ArrayList<>();
+                for (EnumAction action : excludedActions) {
+                    names.add(action.getFriendlyFullName());
+                }
+                d.append(String.join(", ", names));
+            }
+            d.append(" from ");
         } else {
             List<String> names = new ArrayList<>();
-            for (EnumAction action : this.actions) {
+            for (EnumAction action : getActions()) {
                 names.add(action.getFriendlyFullName());
             }
-            d.append(String.join(", ", names)).append(" from ");
+            d.append(String.join(", ", names));
+            if (!excludedActions.isEmpty()) {
+                d.append(", excluding ");
+                names = new ArrayList<>();
+                for (EnumAction action : excludedActions) {
+                    names.add(action.getFriendlyFullName());
+                }
+                d.append(String.join(", ", names));
+            }
+            d.append(" from ");
         }
-        if (players.isEmpty()) {
+        List<SnitchPlayer> excludedPlayers = getExcludedPlayers();
+        if (getPlayers().isEmpty()) {
             d.append("all players");
+            if (!excludedPlayers.isEmpty()) {
+                d.append(", except ");
+                List<String> names = new ArrayList<>();
+                for (SnitchPlayer pl : excludedPlayers) {
+                    names.add(pl.getPlayerName());
+                }
+                d.append(String.join(", ", names));
+            }
         } else {
             List<String> names = new ArrayList<>();
-            for (SnitchPlayer pl : this.players) {
+            for (SnitchPlayer pl : getPlayers()) {
                 names.add(pl.getPlayerName());
             }
             d.append(String.join(", ", names));
+            if (!excludedPlayers.isEmpty()) {
+                d.append(", excluding ");
+                names = new ArrayList<>();
+                for (SnitchPlayer pl : excludedPlayers) {
+                    names.add(pl.getPlayerName());
+                }
+                d.append(String.join(", ", names));
+            }
         }
         SimpleDateFormat df = new SimpleDateFormat("MM/dd/yy hh:mm a");
         if (since > 0) {
@@ -125,6 +163,9 @@ public class SnitchQuery {
             d.append(" in ").append(this.world.getWorldName());
         } else {
             d.append(" in all worlds");
+        }
+        if (hasLimit() && getLimit() != 1000) {
+            d.append(", limited to ").append(getLimit()).append(" results");
         }
 
         return d.toString();
@@ -189,11 +230,11 @@ public class SnitchQuery {
             if (this.actions.isEmpty()){
                 for(EnumAction action : EnumAction.values()){
                     if (player.hasPermission(action.getNode())){
-                        this.actions.add(action);
+                        this.actions.put(action, true);
                     }
                 }
             }
-            for(EnumAction action : this.actions){
+            for (EnumAction action : actions.keySet()) {
                 if (!player.hasPermission(action.getNode())){
                     throw new IllegalArgumentException("You don't have permission for action [" + action.name() + "].");
                 }
@@ -222,10 +263,28 @@ public class SnitchQuery {
         this.before = before;
     }
 
+    public SnitchQuery addExcludedAction(EnumAction... actions) {
+        for (EnumAction action : actions) {
+            if (!getActions().contains(action)) {
+                this.actions.put(action, false);
+            }
+        }
+        return this;
+    }
+
     public SnitchQuery addActions(EnumAction... actions) {
         for(EnumAction action : actions){
             if (!getActions().contains(action)){
-                this.actions.add(action);
+                this.actions.put(action, true);
+            }
+        }
+        return this;
+    }
+
+    public SnitchQuery addExcludedPlayer(SnitchPlayer... players) {
+        for (SnitchPlayer pl : players) {
+            if (!getPlayers().contains(pl)) {
+                this.players.put(pl, false);
             }
         }
         return this;
@@ -234,18 +293,50 @@ public class SnitchQuery {
     public SnitchQuery addPlayers(SnitchPlayer... players) {
         for(SnitchPlayer pl : players){
             if (!getPlayers().contains(pl)){
-                this.players.add(pl);
+                this.players.put(pl, true);
             }
         }
         return this;
     }
 
+    public List<EnumAction> getExcludedActions() {
+        List<EnumAction> list = new ArrayList<>();
+        for (Map.Entry<EnumAction, Boolean> entry : this.actions.entrySet()) {
+            if (!entry.getValue()) {
+                list.add(entry.getKey());
+            }
+        }
+        return list;
+    }
+
+    public List<SnitchPlayer> getExcludedPlayers() {
+        List<SnitchPlayer> list = new ArrayList<>();
+        for (Map.Entry<SnitchPlayer, Boolean> entry : this.players.entrySet()) {
+            if (!entry.getValue()) {
+                list.add(entry.getKey());
+            }
+        }
+        return list;
+    }
+
     public List<SnitchPlayer> getPlayers() {
-        return players;
+        List<SnitchPlayer> list = new ArrayList<>();
+        for (Map.Entry<SnitchPlayer, Boolean> entry : this.players.entrySet()) {
+            if (entry.getValue()) {
+                list.add(entry.getKey());
+            }
+        }
+        return list;
     }
 
     public List<EnumAction> getActions() {
-        return actions;
+        List<EnumAction> list = new ArrayList<>();
+        for (Map.Entry<EnumAction, Boolean> entry : this.actions.entrySet()) {
+            if (entry.getValue()) {
+                list.add(entry.getKey());
+            }
+        }
+        return list;
     }
 
     public long getSince() {

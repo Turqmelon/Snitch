@@ -78,6 +78,24 @@ public class MySQLStorage implements StorageMethod {
                 }
             }
         }
+        if (!query.getExcludedPlayers().isEmpty()) {
+            List<SnitchPlayer> players = query.getExcludedPlayers();
+            if (players.size() == 1) {
+                conditions.append("player_id != '").append(players.get(0).getId()).append("'");
+            } else {
+                StringBuilder playerQuery = new StringBuilder("(");
+                for (SnitchPlayer player : players) {
+                    if (playerQuery.length() > 1) {
+                        playerQuery.append(" AND ");
+                    }
+                    playerQuery.append("player_id != '").append(player.getId()).append("'");
+                }
+                playerQuery.append(")");
+                if (playerQuery.length() > 2) {
+                    conditions.append(playerQuery);
+                }
+            }
+        }
         if (!query.getActions().isEmpty()) {
             if (conditions.length() != 0) {
                 conditions.append("AND ");
@@ -92,6 +110,27 @@ public class MySQLStorage implements StorageMethod {
                         actionQuery.append(" OR ");
                     }
                     actionQuery.append("action_id = '").append(action.getId()).append("'");
+                }
+                actionQuery.append(")");
+                if (actionQuery.length() > 2) {
+                    conditions.append(actionQuery);
+                }
+            }
+        }
+        if (!query.getExcludedActions().isEmpty()) {
+            if (conditions.length() != 0) {
+                conditions.append("AND ");
+            }
+            List<EnumAction> actions = query.getExcludedActions();
+            if (actions.size() == 1) {
+                conditions.append("action_id != '").append(actions.get(0).getId()).append("'");
+            } else {
+                StringBuilder actionQuery = new StringBuilder("(");
+                for (EnumAction action : actions) {
+                    if (actionQuery.length() > 1) {
+                        actionQuery.append(" AND ");
+                    }
+                    actionQuery.append("action_id != '").append(action.getId()).append("'");
                 }
                 actionQuery.append(")");
                 if (actionQuery.length() > 2) {

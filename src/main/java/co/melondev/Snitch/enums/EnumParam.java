@@ -27,9 +27,17 @@ public enum EnumParam {
         @Override
         public void parse(Player player, SnitchQuery query, String[] values) throws SQLException {
             for (String playerName : values) {
+                boolean exclude = playerName.startsWith("!");
+                if (exclude) {
+                    playerName = playerName.substring(1);
+                }
                 SnitchPlayer pl = SnitchPlugin.getInstance().getStorage().getPlayer(playerName);
                 Validate.notNull(pl, "Unknown player: " + playerName);
-                query.addPlayers(pl);
+                if (exclude) {
+                    query.addExcludedPlayer(pl);
+                } else {
+                    query.addPlayers(pl);
+                }
             }
         }
     },
@@ -37,10 +45,18 @@ public enum EnumParam {
         @Override
         public void parse(Player player, SnitchQuery query, String[] values) throws SQLException {
             for (String action : values) {
+                boolean exclude = action.startsWith("!");
+                if (exclude) {
+                    action = action.substring(1);
+                }
                 List<EnumAction> results = EnumAction.getByName(action);
                 Validate.notEmpty(results, "Unknown action: " + action);
                 for (EnumAction a : results) {
-                    query.addActions(a);
+                    if (exclude) {
+                        query.addExcludedAction(a);
+                    } else {
+                        query.addActions(a);
+                    }
                 }
             }
         }
