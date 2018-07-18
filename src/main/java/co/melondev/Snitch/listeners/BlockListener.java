@@ -257,6 +257,10 @@ public class BlockListener implements Listener {
                     logBlockAction(player, block, EnumAction.TREE_GROW);
                 }
             }
+        } else if (EnumAction.MUSHROOM_GROW.isEnabled()) {
+            for (BlockState block : event.getBlocks()) {
+                logBlockAction(player, block, EnumAction.MUSHROOM_GROW);
+            }
         }
     }
 

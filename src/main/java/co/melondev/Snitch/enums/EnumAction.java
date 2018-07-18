@@ -57,7 +57,7 @@ public enum EnumAction {
     BLOCK_IGNITE(40, "ignite", "%actor ignited %block", new BlockCreationHandler()),
     LEAF_DECAY(41, "decay", "leaf decayed", new BlockDestructionHandler()),
     LIGHTNING(42, "lightning", "lightning struck", new NoCapabilityHandler()),
-    MUSHROOM_GROW(43, "grow", "%actor grew large mushroom", new NoCapabilityHandler()),
+    MUSHROOM_GROW(43, "grow", "%actor grew large mushroom", new BlockCreationHandler()),
     PLAYER_CHAT(44, "chat", "%actor said: %message", new NoCapabilityHandler()),
     PLAYER_COMMAND(45, "command", "%actor executed: %message", new NoCapabilityHandler()),
     PLAYER_DEATH(46, "death", "%actor died", new NoCapabilityHandler()),
