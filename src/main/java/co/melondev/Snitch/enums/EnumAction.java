@@ -47,7 +47,7 @@ public enum EnumAction {
     FIRE_SPREAD(30, "fire", "fire spread to %block", new BlockSpreadHandler()),
     FIREWORK_LAUNCH(31, "firework", "%actor launched firework", new NoCapabilityHandler()),
     HANGING_PLACE(32, "hang", "%actor hung art", new NoCapabilityHandler()),
-    HANGING_BREAK(33, "unhang", "%actor knocked down art", new NoCapabilityHandler()),
+    HANGING_BREAK(33, "unhang", "%actor knocked down art", new EntityDeathHandler()),
     ITEM_DROP(34, "drop", "%actor dropped %item", new NoCapabilityHandler()),
     ITEM_INSERT(35, "insert", "%actor inserted %item", new ItemInsertHandler()),
     ITEM_PICKUP(36, "pickup", "%actor picked up %item", new NoCapabilityHandler()),

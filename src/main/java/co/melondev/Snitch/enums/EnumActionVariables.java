@@ -143,12 +143,6 @@ public enum EnumActionVariables {
             return obj.get("message").getAsString();
         }
     },
-    IP("ip"){
-        @Override
-        public String getReplacement(JsonObject obj) {
-            return obj.get("ip").getAsString();
-        }
-    },
     CAUSE("cause") {
         @Override
         public String getReplacement(JsonObject obj) {
@@ -164,6 +158,12 @@ public enum EnumActionVariables {
             double z = obj.get("z").getAsDouble();
             DecimalFormat df = new DecimalFormat("#");
             return df.format(x) + "x " + df.format(y) + "y " + df.format(z) + "z in " + world;
+        }
+    },
+    IP("ip") {
+        @Override
+        public String getReplacement(JsonObject obj) {
+            return obj.get("ip").getAsString();
         }
     },
     SPAWNEGG("spawnegg"){

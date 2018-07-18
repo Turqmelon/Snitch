@@ -20,6 +20,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
@@ -394,6 +396,28 @@ public class EntityListener implements Listener {
             }
         }
         logAction(defaultActor, entity, entity.getLocation(), EnumAction.ENTITY_EXPLODE);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onHang(HangingBreakByEntityEvent event) {
+        if (!EnumAction.HANGING_BREAK.isEnabled()) {
+            return;
+        }
+        Entity entity = event.getEntity();
+        Entity breaker = event.getRemover();
+        if ((breaker instanceof Player)) {
+            logAction((Player) breaker, entity, entity.getLocation(), EnumAction.HANGING_BREAK);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onHang(HangingPlaceEvent event) {
+        if (!EnumAction.HANGING_PLACE.isEnabled()) {
+            return;
+        }
+        Entity entity = event.getEntity();
+        Player player = event.getPlayer();
+        logAction(player, entity, entity.getLocation(), EnumAction.HANGING_PLACE);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

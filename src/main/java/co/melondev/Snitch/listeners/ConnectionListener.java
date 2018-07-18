@@ -70,7 +70,7 @@ public class ConnectionListener implements Listener {
         Player player = event.getPlayer();
         if (EnumAction.PLAYER_JOIN.isEnabled()) {
             JsonObject obj = new JsonObject();
-            obj.addProperty("io", player.getAddress().getAddress().getHostAddress());
+            obj.addProperty("ip", player.getAddress().getAddress().getHostAddress());
             logAction(player, player.getLocation(), EnumAction.PLAYER_JOIN, obj);
         }
     }

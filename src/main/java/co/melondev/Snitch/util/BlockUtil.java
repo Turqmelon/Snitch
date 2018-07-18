@@ -55,10 +55,6 @@ public class BlockUtil {
         if ((bs instanceof BrewingStand)) {
             ((BrewingStand) bs).setBrewingTime(blockData.get("brewingTime").getAsInt());
             ((BrewingStand) bs).setFuelLevel(blockData.get("fuelLevel").getAsInt());
-            InvUtil.syncInventory(((BrewingStand) bs).getInventory(), blockData.getAsJsonObject("inventory"));
-        }
-        if ((bs instanceof Container)) {
-            InvUtil.syncInventory(((Container) bs).getInventory(), blockData.getAsJsonObject("inventory"));
         }
         if ((bs instanceof Lockable)) {
             Lockable l = (Lockable) bs;
@@ -71,9 +67,6 @@ public class BlockUtil {
             CommandBlock cb = (CommandBlock) bs;
             cb.setName(blockData.get("name").getAsString());
             cb.setCommand(blockData.get("command").getAsString());
-        }
-        if ((bs instanceof Chest)) {
-            InvUtil.syncInventory(((Chest) bs).getBlockInventory(), blockData.getAsJsonObject("inventory"));
         }
         if ((bs instanceof CreatureSpawner)) {
             CreatureSpawner cs = (CreatureSpawner) bs;
@@ -107,7 +100,6 @@ public class BlockUtil {
         if ((bs instanceof Furnace)) {
             ((Furnace) bs).setCookTime(blockData.get("cookTime").getAsShort());
             ((Furnace) bs).setBurnTime(blockData.get("burnTime").getAsShort());
-            InvUtil.syncInventory(((Furnace) bs).getInventory(), blockData.getAsJsonObject("inventory"));
         }
         if ((bs instanceof NoteBlock)) {
             ((NoteBlock) bs).setRawNote(blockData.get("note").getAsByte());
