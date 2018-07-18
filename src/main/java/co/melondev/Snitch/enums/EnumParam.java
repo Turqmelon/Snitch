@@ -23,7 +23,7 @@ import java.util.List;
 @SuppressWarnings("Duplicates")
 public enum EnumParam {
 
-    PLAYER(Arrays.asList("player", "players", "p"), "player Turqmelon") {
+    PLAYER(Arrays.asList("player", "players", "p", "actor"), "player Turqmelon") {
         @Override
         public void parse(Player player, SnitchQuery query, String[] values) throws SQLException {
             for (String playerName : values) {
@@ -86,6 +86,21 @@ public enum EnumParam {
                     query.setWorld(SnitchPlugin.getInstance().getStorage().register(player.getWorld()));
             } catch (NumberFormatException ex) {
                 throw new IllegalArgumentException("Invalid number provided for " + name() + " param.");
+            }
+        }
+    },
+    LIMIT(Arrays.asList("limit", "lim", "cap"), "limit 50") {
+        @Override
+        public void parse(Player player, SnitchQuery query, String[] values) throws SQLException {
+            Validate.notEmpty(values, "No limit specified.");
+            Validate.isTrue(values.length == 1, "Multiple limit values specified.");
+            try {
+                int limit = Integer.parseInt(values[0]);
+                if (limit < 1)
+                    throw new NumberFormatException();
+                query.limit(limit);
+            } catch (NumberFormatException ex) {
+                throw new IllegalArgumentException("Invalid limit: " + values[0]);
             }
         }
     },

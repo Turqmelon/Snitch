@@ -154,6 +154,7 @@ public enum EnumSnitchCommand {
                 Player player = (Player) sender;
                 SnitchQuery query = new SnitchQuery();
                 query.parseParams(player, args);
+                query.limit(1000);
                 List<SnitchEntry> entryList = SnitchPlugin.getInstance().getStorage().performLookup(query);
                 EnumSnitchCommand.getOrCreateSession(player, query, entryList, 1);
                 MsgUtil.sendRecords(sender, query, entryList, 1, 7);

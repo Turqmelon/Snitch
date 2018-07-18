@@ -23,10 +23,24 @@ public class SnitchQuery {
     private SnitchPosition position = null;
     private double range = -1;
     private boolean useExactPosition = false;
+    private int limit = -1;
 
     public SnitchQuery() {
         this.since = System.currentTimeMillis() - SnitchPlugin.getInstance().getConfiguration().getDefaultTime();
         this.before = System.currentTimeMillis() + 1000;
+    }
+
+    public SnitchQuery limit(int limit) {
+        this.limit = limit;
+        return this;
+    }
+
+    public boolean hasLimit() {
+        return this.limit > 0;
+    }
+
+    public int getLimit() {
+        return limit;
     }
 
     public SnitchQuery exactPosition() {

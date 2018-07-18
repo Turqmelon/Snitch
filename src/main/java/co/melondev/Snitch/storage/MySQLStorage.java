@@ -134,6 +134,9 @@ public class MySQLStorage implements StorageMethod {
             q.append("1 ");
         }
         q.append("ORDER BY timestamp DESC");
+        if (query.hasLimit()) {
+            q.append(" LIMIT ").append(query.getLimit());
+        }
         System.out.println("[DEBUG] Query: \"" + query.getSearchSummary() + "\" -> \"" + q.toString() + "\".");
         return q.toString();
     }
