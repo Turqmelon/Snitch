@@ -1,5 +1,6 @@
 package co.melondev.Snitch.entities;
 
+import co.melondev.Snitch.enums.EnumSnitchActivity;
 import co.melondev.Snitch.util.Previewable;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -18,6 +19,7 @@ public class SnitchSession {
     private SnitchQuery query;
     private List<SnitchEntry> entries;
     private int page;
+    private EnumSnitchActivity lastActivity = null;
 
     private Previewable activePreview = null;
     private List<Location> adjustedBlocks = new ArrayList<>();
@@ -27,6 +29,14 @@ public class SnitchSession {
         this.query = query;
         this.entries = entries;
         this.page = page;
+    }
+
+    public EnumSnitchActivity getLastActivity() {
+        return lastActivity;
+    }
+
+    public void setLastActivity(EnumSnitchActivity lastActivity) {
+        this.lastActivity = lastActivity;
     }
 
     public List<Location> getAdjustedBlocks() {

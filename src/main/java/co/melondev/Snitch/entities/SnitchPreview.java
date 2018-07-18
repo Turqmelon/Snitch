@@ -175,6 +175,7 @@ public class SnitchPreview implements Previewable {
                 }
             }
         }
+        session.setLastActivity(this.activity);
         this.callback.handle(session.getPlayer(), new SnitchResult(applied, failed, planned, isPreview(), movedEntities, session.getQuery(), new ArrayList<>()));
     }
 

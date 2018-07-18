@@ -29,7 +29,7 @@ public class SnitchRollback extends SnitchPreview {
             if (!result.getMovedEntities().isEmpty()) {
                 player.sendMessage(MsgUtil.record(result.getMovedEntities().size() + "+ entities were moved to safety"));
             }
-            player.sendMessage(MsgUtil.record("If you made a mistake, you can §e/snitch restore <param>§7."));
+            player.sendMessage(MsgUtil.record("If you made a mistake, you can §e/snitch undo§7."));
             MsgUtil.staff("§f" + player.getName() + "§b performed a rollback: §f" + result.getQuery().getSearchSummary());
         }
     }

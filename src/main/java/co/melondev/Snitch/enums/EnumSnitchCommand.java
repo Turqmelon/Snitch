@@ -345,6 +345,42 @@ public enum EnumSnitchCommand {
             }
         }
     },
+    UNDO(Arrays.asList("undo", "un"), "", "Undo last rollback or restore", "snitch.undo") {
+        @Override
+        public void run(CommandSender sender, List<String> args) throws SQLException {
+            if ((sender instanceof Player)) {
+
+                Player player = (Player) sender;
+
+                SnitchSession session = SnitchPlugin.getInstance().getPlayerManager().getSession(player);
+                if (session != null) {
+
+                    if (session.getLastActivity() != null && (session.getLastActivity() == EnumSnitchActivity.ROLLBACK) ||
+                            (session.getLastActivity() == EnumSnitchActivity.RESTORE)) {
+
+                        if (session.getLastActivity() == EnumSnitchActivity.ROLLBACK) {
+                            SnitchRestore restore = new SnitchRestore(session, new SnitchRestore.DefaultRestoreCallback(System.currentTimeMillis()));
+                            restore.apply();
+                        } else if (session.getLastActivity() == EnumSnitchActivity.RESTORE) {
+                            SnitchRollback rollback = new SnitchRollback(session, new SnitchRollback.DefaultRollbackCallback(System.currentTimeMillis()));
+                            rollback.apply();
+                        } else {
+                            sender.sendMessage(MsgUtil.error("Not sure how to handle undo for: " + session.getLastActivity().name()));
+                        }
+
+                    } else {
+                        sender.sendMessage(MsgUtil.error("Your last activity can't be undone! Try this command after performing either a rollback or a restore."));
+                    }
+
+                } else {
+                    sender.sendMessage(MsgUtil.error("No recent action to undo!"));
+                }
+
+            } else {
+                sender.sendMessage(MsgUtil.error("You must be a player to use the undo command."));
+            }
+        }
+    },
     EXTINGUISH(Arrays.asList("extinguish", "ex"), "[radius]", "Extinguish fires", "snitch.extinguish") {
         @Override
         public void run(CommandSender sender, List<String> args) throws SQLException {
