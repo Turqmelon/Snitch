@@ -3,6 +3,8 @@ Snitch block logging and rollback.
 
 **WARNING:** Snitch is still very much in development. We do not recommend using it on production servers at this time.
 
+![Welcome](https://d3vv6lp55qjaqc.cloudfront.net/items/39292t0P011q1j2y1v3W/Screen%20Shot%202018-07-17%20at%209.30.58%20PM.png?X-CloudApp-Visitor-Id=1484866&v=749fdf45)
+
 ## Why Snitch?
 Snitch is the only block logging and rollback plugin that was built on the APIs of 1.12. This ensures that events that are not caught by other plugins, such as armor stand interaction, item frames, and many other specific details are logged and rolled back properly.
 
@@ -46,6 +48,9 @@ Commands in snitch are super easy to get the hang of. We'll cover the basics, fi
 If you've ever used a logging or rollback plugin before, learning Snitch will be a snap. There are no complicated syntax or symbol formats to remember, just the data you want to search by.
 
 ## Hello, Inspector.
+
+![Inspector](https://d3vv6lp55qjaqc.cloudfront.net/items/3X1m0s0B0I213e421L2v/Screen%20Shot%202018-07-17%20at%209.23.36%20PM.png?X-CloudApp-Visitor-Id=1484866&v=da8ec191)
+
 The **Snitch Inspector** is used for single-block investigations, and requires no tools like other plugins may. Toggle the inspector quickly by using `/s i`.
 
 To look into a block that was broken, right click where it once was.
@@ -54,6 +59,8 @@ To look into a block that was placed, just punch it.
 You'll get quick records in chat informing you of the activity for that space. Turn off the inspector with the same command to continue on your business.
 
 ## Nearby Investigation
+
+![Near](https://d3vv6lp55qjaqc.cloudfront.net/items/0B0R1d2i3R31042B1V2v/Screen%20Shot%202018-07-17%20at%209.25.06%20PM.png?X-CloudApp-Visitor-Id=1484866&v=b4be1fe2)
 Sometimes one block isn't enough to tell you the whole story. Use `/s near` to give you a history of all activity for within 5 blocks of you. You can also optionally use `/s near #` to change this radius to something larger, like 20 blocks.
 
 Like the inspector, you'll get a chat popup for everything that's happened.
@@ -61,10 +68,14 @@ Like the inspector, you'll get a chat popup for everything that's happened.
 ## Specifics Specifics
 Sometimes you want to get really specific with your criteria. The near command may have provided you the name of the troublemaker, but how do we find out what else they may have caused?
 
+![Specific 1](https://d3vv6lp55qjaqc.cloudfront.net/items/2U3R1q0B3o2V0E0W3431/Screen%20Shot%202018-07-17%20at%209.26.00%20PM.png?X-CloudApp-Visitor-Id=1484866&v=4a194de8)
 Let's look up all their activity for the past day:
 `/s l player SomeGriefer from 1d`
 
 There are a few ways I could type that as well. Instead of `player`, I could say `p` or instead of `from` I could say `since` or just `s`. Syntax isn't a major concern when performing lookups.
+
+![Specific 2](https://d3vv6lp55qjaqc.cloudfront.net/items/0m3u2B1c273u2p064206/Screen%20Shot%202018-07-17%20at%209.26.54%20PM.png?X-CloudApp-Visitor-Id=1484866&v=b203455b)
+_Crossed out entries indicate an action that's been rolled back.)_
 
 Maybe he had an accomplice that we want to include:
 `/s l p SomeGriefer SomeBaddie s 1d`
@@ -72,6 +83,8 @@ Maybe he had an accomplice that we want to include:
 You can include multiple bits of data just by typing them out. We also used the one-letter versions in that command to save time.
 
 ## Teleporting to the Damage
+
+![Teleport](https://d3vv6lp55qjaqc.cloudfront.net/items/0031260U2B2X3A0u3H2s/Screen%20Shot%202018-07-17%20at%209.28.07%20PM.png?X-CloudApp-Visitor-Id=1484866&v=27ffbc59)
 We found what we're looking for, but it may be a bit far. Luckily, Snitch makes teleporting to specific events a breeze.
 
 * When viewing records, a dark gray ID will be shown to the far right of the entry. This is the **Record Index**. To teleport to it, simply type **/snitch tp <#>**.
@@ -83,6 +96,7 @@ Snitch performs near-perfect rollbacks of the damaged area. We do this by loggin
 ### Rollback Previews
 You can preview the effect of a rollback before applying it to the server by using `/snitch preview`. When you preview a rollback, only the block changes are shown to you. Other adjustments, like killed monsters or displaced entities may not be reflected by a rollback preview. Say we wanted to preview the rollback for our criteria above:
 
+![Preview](https://d3vv6lp55qjaqc.cloudfront.net/items/1h3s1e3t061F1r471x2g/Screen%20Shot%202018-07-17%20at%209.29.04%20PM.png?X-CloudApp-Visitor-Id=1484866&v=118376a9)
 `/snitch pv player SomeGriefer SomeBaddie since 1d`
 
 Snitch will give you a glance at what it'll look like. From there, you can type either `/snitch pv apply` to convert those changes to an actual rollback, or `/snitch pv cancel` to cancel the visualization. You can also perform another preview request with altered criteria to alter what you see.
@@ -90,13 +104,15 @@ Snitch will give you a glance at what it'll look like. From there, you can type 
 ### Making the Rollback
 From a preview, you can simply use `/snitch pv apply` to apply the rollback, but if you're confident in your abilities, you can make the rollback directly. Using the same criteria above, we'll use the following command:
 
+![Rollback](https://d3vv6lp55qjaqc.cloudfront.net/items/273s2H0D0c1W191f1P1A/Screen%20Shot%202018-07-17%20at%209.29.31%20PM.png?X-CloudApp-Visitor-Id=1484866&v=204ef764)
 `/snitch rb player SomeGriefer SomeBaddie since 1d`
 
-Without any furhter confirmation, the rollback will commence and the damage will be reverted.
+Without any further confirmation, the rollback will commence and the damage will be reverted.
 
 ## Re-Applying World Changes
 Uh oh, you accidentally reverted something you shouldn't have! Luckily, Snitch maintains records _even after you've rolled them back_, just marked off specifically. Let's say **SomeBaddie** built a nice house near our spawn area we want to keep. We cna run the following command:
 
+![Restore](https://d3vv6lp55qjaqc.cloudfront.net/items/2s1f3h0C062i3K1B353H/Screen%20Shot%202018-07-17%20at%209.30.00%20PM.png?X-CloudApp-Visitor-Id=1484866&v=fea33fe1)
 `/snitch restore player SomeBaddie area 20`
 
 Snitch will re-apply the world changes to the specific area and mark the logs as non-reverted for future use. Lovely!
@@ -111,6 +127,7 @@ It's like the rollback never happened there!
 # Actions
 Actions are a list of what's logged by Snitch. By default, all actions are enabled but can be specifically disabled by listing them in the `config.yml` file.
 
+![Actions](https://d3vv6lp55qjaqc.cloudfront.net/items/0E3L1n3X3G3F0y1s3F2s/Screen%20Shot%202018-07-17%20at%209.30.26%20PM.png?X-CloudApp-Visitor-Id=1484866&v=58f7984d)
 You can view a list of logged actions in-game using `/snitch actions`.
 
 ---
