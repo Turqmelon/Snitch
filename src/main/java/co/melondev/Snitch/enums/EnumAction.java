@@ -24,8 +24,8 @@ public enum EnumAction {
     BLOCK_USE(9, "use", "%actor used %block", new NoCapabilityHandler()),
     BLOCK_EXPLODE(16, "explode", "%actor blew up %block", new BlockDestructionHandler()),
     BONEMEAL_USE(10, "bonemeal", "%actor used bonemeal on %block", new NoCapabilityHandler()), // TODO
-    BUCKET_FILL(11, "fill", "%actor filled a %bucket bucket", new BlockDestructionHandler()),
-    BUCKET_EMPTY(12, "empty", "%actor emptied a %bucket bucket", new BlockCreationHandler()),
+    BUCKET_FILL(11, "fill", "%actor filled a %bucket", new BlockDestructionHandler()),
+    BUCKET_EMPTY(12, "empty", "%actor emptied a %bucket", new BlockCreationHandler()),
     CAKE_EAT(13, "eat", "%actor ate cake", new CakeHandler()),
     CONTAINER_ACCESS(14, "access", "%actor accessed %block", new NoCapabilityHandler()), // TODO
     CRAFT_ITEM(15, "craft", "%actor crafted %item", new NoCapabilityHandler()),

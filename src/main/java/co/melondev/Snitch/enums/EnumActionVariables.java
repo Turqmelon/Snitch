@@ -116,7 +116,7 @@ public enum EnumActionVariables {
     BUCKET("bucket"){
         @Override
         public String getReplacement(JsonObject obj) {
-            return obj.get("type").getAsString();
+            return obj.get("type").getAsString().toLowerCase().replace("_", " ");
         }
     },
     ITEM("item") {
