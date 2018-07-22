@@ -28,15 +28,15 @@ There are no plans for 1.8 support at this time.
 ---
 # Commands
 
-Commands in snitch are super easy to get the hang of. We'll cover the basics, first:
+Commands in Snitch are super easy to get the hang of. We'll cover the basics, first:
 
 * `/snitch actions|a` provides an in-game reference for the available, searchable actions
 * `/snitch params|p` provides an in-game reference of the different parameters available to you, with examples
 * `/snitch rollback|rb <params>` performs a rollback using the provided parameters
 * `/snitch restore|rs <params>` re-applies actions from a rollback. Think of it like an undo command
 * `/snitch preview|pv <params>` provides a player-only preview of a rollback, making it simple to preview your changes before they happen
-* `/snitch lookup|l <params>` perform sa lookup using the specified parameters
-* `/snitch near [radius]` is a shortcut for typing `/snitch l area 5`. Enter a different radius to search nearby for different radiuses
+* `/snitch lookup|l <params>` performs a lookup using the specified parameters
+* `/snitch near [radius]` is a shortcut for typing `/snitch l area 5`. Enter a different radius to search nearby within that radius
 * `/snitch teleport|tp <#>` teleport to a record from a lookup. You can also just click on the record in your chat.
 * `/snitch inspector|i` toggle the inspector.
 * `/snitch next|prev` change pages in a lookup
