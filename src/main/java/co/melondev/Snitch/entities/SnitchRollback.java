@@ -6,13 +6,25 @@ import org.bukkit.entity.Player;
 
 /**
  * Created by Devon on 7/14/18.
+ *
+ * Undo changes to a the world by reverting entries.
  */
 public class SnitchRollback extends SnitchPreview {
+
+    /**
+     * Start with a session and a callback.
+     *
+     * @param session  the session (player performing rollback, query, etc.)
+     * @param callback the callback to run on completion
+     */
     public SnitchRollback(SnitchSession session, SnitchCallback callback) {
         super(session, callback);
         activity = EnumSnitchActivity.ROLLBACK;
     }
 
+    /**
+     * The default callback for rollbacks
+     */
     public static class DefaultRollbackCallback implements SnitchCallback {
 
         private long startTime;

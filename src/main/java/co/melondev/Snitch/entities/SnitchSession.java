@@ -12,16 +12,44 @@ import java.util.UUID;
 
 /**
  * Created by Devon on 7/14/18.
+ *
+ * Contains details about an active usage of the Snitch plugin. Used for pagination, preview management, and more.
  */
 public class SnitchSession {
 
+    /**
+     * The UUID of the player associated with this session
+     */
     private UUID playerUUID;
+
+    /**
+     * The query that was used for this session.
+     */
     private SnitchQuery query;
+
+    /**
+     * Downloaded entries for this search
+     */
     private List<SnitchEntry> entries;
+
+    /**
+     * The current page
+     */
     private int page;
+
+    /**
+     * The last activity performed against these results. MULL for nothing.
+     */
     private EnumSnitchActivity lastActivity = null;
 
+    /**
+     * Any active preview associated with these results. NULL for no preview.
+     */
     private Previewable activePreview = null;
+
+    /**
+     * Any adjusted blocks associated with this session.
+     */
     private List<Location> adjustedBlocks = new ArrayList<>();
 
     public SnitchSession(Player player, SnitchQuery query, List<SnitchEntry> entries, int page) {

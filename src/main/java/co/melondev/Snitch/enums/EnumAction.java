@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A list of logged actions within Snitch
+ */
 public enum EnumAction {
 
     BLOCK_BURN(0, "burn", "%actor burned %block", new BlockDestructionHandler()),
@@ -78,10 +81,29 @@ public enum EnumAction {
     WORLD_EDIT(61, "we", "%actor used worldedit", new NoCapabilityHandler()),
     XP_PICKUP(62, "xp", "%actor picked up %xp XP", new NoCapabilityHandler());
 
+    /**
+     * As actions are looked up, we cache them here for speedy lookups in the future
+     */
     private static Map<Integer, EnumAction> actionMap = new HashMap<>();
+
+    /**
+     * The ID of this action
+     */
     private int id;
+
+    /**
+     * The shortnmae for an action. This doesn't have to be unique, and is used to group similar actions
+     */
     private String name;
+
+    /**
+     * The message to show in lookups. Variables from {@link EnumActionVariables}
+     */
     private String explained;
+
+    /**
+     * The controller for rollbacks, restores, and previews
+     */
     private SnitchProcessHandler processHandler;
 
     EnumAction(int id, String name, String explained, SnitchProcessHandler processHandler) {
@@ -91,6 +113,12 @@ public enum EnumAction {
         this.processHandler = processHandler;
     }
 
+    /**
+     * Returns a list of actions matching this name. There can be multiple results, as some actions are related.
+     *
+     * @param name the name to search for
+     * @return a list of matching actions
+     */
     public static List<EnumAction> getByName(String name) {
         List<EnumAction> results = new ArrayList<>();
         for (EnumAction action : EnumAction.values()) {
@@ -101,6 +129,11 @@ public enum EnumAction {
         return results;
     }
 
+    /**
+     * Gets an action by the numeric ID. Checks the cached map first
+     * @param action_id     the id to search for
+     * @return the matching action
+     */
     public static EnumAction getById(int action_id) {
         if (actionMap.containsKey(action_id)) {
             return actionMap.get(action_id);
@@ -118,14 +151,26 @@ public enum EnumAction {
         return processHandler;
     }
 
+    /**
+     * Returns the {@link #name}, properly capitalized and without underscores
+     * @return the friendly name
+     */
     public String getFriendlyFullName() {
         return WordUtils.capitalizeFully(name().replace("_", " "));
     }
 
+    /**
+     * Gets the permission node for an action
+     * @return the node for this action
+     */
     public String getNode(){
         return "snitch.action." + name().toLowerCase().replace("_", "");
     }
 
+    /**
+     * Checks if this action is logged against the configuration
+     * @return whether or not this action is enabled
+     */
     public boolean isEnabled(){
         return !SnitchPlugin.getInstance().getConfiguration().getDisabledLogging().contains(this);
     }

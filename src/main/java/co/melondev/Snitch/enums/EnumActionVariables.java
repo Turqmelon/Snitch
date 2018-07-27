@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Specifies how to internet variables within {@link EnumAction#getExplained()}
+ */
 public enum EnumActionVariables {
 
 
@@ -213,12 +216,21 @@ public enum EnumActionVariables {
         }
     };
 
+    /**
+     * The key to replace in {@link EnumAction#getExplained()}
+     */
     private String key;
 
     EnumActionVariables(String key) {
         this.key = key;
     }
 
+    /**
+     * Returns the proper replacement for a variable
+     *
+     * @param obj the metadata from an event
+     * @return the replacement
+     */
     public abstract String getReplacement(JsonObject obj);
 
     public String getKey() {

@@ -4,10 +4,24 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
+/**
+ * Represents a player or actor within Snitch
+ */
 public class SnitchPlayer {
 
+    /**
+     * The internal ID, as used by Snitch
+     */
     private int id;
+
+    /**
+     * The player's Mojang UUID
+     */
     private UUID uuid;
+
+    /**
+     * The most recent player name we have on file. We'll update this on join.
+     */
     private String playerName;
 
     public SnitchPlayer(ResultSet set) throws SQLException {

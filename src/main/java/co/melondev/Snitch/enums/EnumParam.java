@@ -19,10 +19,15 @@ import java.util.List;
 
 /**
  * Created by Devon on 7/13/18.
+ *
+ * Stores all parameters that can be searched by, as well as the logic for interpreting queries
  */
 @SuppressWarnings("Duplicates")
 public enum EnumParam {
 
+    /**
+     * Allows searching for records by a specific {@link SnitchPlayer}
+     */
     PLAYER(Arrays.asList("player", "players", "p", "actor"), "player Turqmelon") {
         @Override
         public void parse(Player player, SnitchQuery query, String[] values) throws SQLException {
@@ -41,6 +46,9 @@ public enum EnumParam {
             }
         }
     },
+    /**
+     * Allows searching for records by specific {@link EnumAction}
+     */
     ACTION(Arrays.asList("action", "actions", "a"), "action break") {
         @Override
         public void parse(Player player, SnitchQuery query, String[] values) throws SQLException {
@@ -61,6 +69,9 @@ public enum EnumParam {
             }
         }
     },
+    /**
+     * Allows filtering results to only those that happened from a specific time
+     */
     SINCE(Arrays.asList("since", "from", "s"), "since 1d") {
         @Override
         public void parse(Player player, SnitchQuery query, String[] values) throws SQLException {
@@ -69,6 +80,9 @@ public enum EnumParam {
             query.setSinceTime(EnumParam.getUnixTime(values[0], false));
         }
     },
+    /**
+     * Allows filtering results to only those that happened before a specific time
+     */
     BEFORE(Arrays.asList("before", "prior", "b"), "before 06/12/18") {
         @Override
         public void parse(Player player, SnitchQuery query, String[] values) throws SQLException {
@@ -77,6 +91,10 @@ public enum EnumParam {
             query.setBeforeTime(EnumParam.getUnixTime(values[0], false));
         }
     },
+    /**
+     * Allows filtering results to only those within a specific world
+     * TODO: Add the ability to parse the "world" name correctly.
+     */
     WORLD(Arrays.asList("world", "w"), "world world_nether") {
         @Override
         public void parse(Player player, SnitchQuery query, String[] values) throws SQLException {
@@ -88,6 +106,10 @@ public enum EnumParam {
             query.setWorld(w);
         }
     },
+    /**
+     * Allow specifying another coordinate set to search other areas of a world
+     * If a world is not specified, we'll default it to the one of the current player
+     */
     COORDS(Arrays.asList("coords", "relative", "pos", "position"), "relative 100 150 100") {
         @Override
         public void parse(Player player, SnitchQuery query, String[] values) throws SQLException {
@@ -105,6 +127,10 @@ public enum EnumParam {
             }
         }
     },
+    /**
+     * Allows limiting results to a certain set.
+     * For rollbacks, we don't add a limit, for lookups we default this to 1,000 if one is not specified.
+     */
     LIMIT(Arrays.asList("limit", "lim", "cap"), "limit 50") {
         @Override
         public void parse(Player player, SnitchQuery query, String[] values) throws SQLException {
@@ -120,6 +146,9 @@ public enum EnumParam {
             }
         }
     },
+    /**
+     * Filters records to only those that happen within a specific range
+     */
     RADIUS(Arrays.asList("area", "radius", "range"), "area 20") {
         @Override
         public void parse(Player player, SnitchQuery query, String[] values) throws SQLException {
@@ -152,6 +181,13 @@ public enum EnumParam {
         this.example = example;
     }
 
+    /**
+     * Gets the unix time from either an absolute date or a relative time
+     *
+     * @param date   the date in MM/dd/yy format or in format defined by {@link TimeUtil}
+     * @param future whether or not this timestamp is in the future (required by {@link TimeUtil})
+     * @return the specified time in unix time
+     */
     private static long getUnixTime(String date, boolean future) {
         SimpleDateFormat fullDate = new SimpleDateFormat("MM/dd/yy");
         try {
@@ -165,6 +201,11 @@ public enum EnumParam {
         }
     }
 
+    /**
+     * Matches the specified string to a param
+     * @param keyword      the keyword to search for
+     * @return the matching param, null if no result
+     */
     public static EnumParam getByKeyword(String keyword) {
         for (EnumParam param : values()) {
             if (param.getKeywords().contains(keyword.toLowerCase())) {
@@ -182,6 +223,13 @@ public enum EnumParam {
         return keywords;
     }
 
+    /**
+     * Parses the specified values and updates your search query
+     * @param player            the player performing the lookup or rollback
+     * @param query             the query object associated with their actions
+     * @param values            the values provided following the param keyword
+     * @throws SQLException     if there's any database errors
+     */
     public abstract void parse(Player player, SnitchQuery query, String[] values) throws SQLException;
 
 }

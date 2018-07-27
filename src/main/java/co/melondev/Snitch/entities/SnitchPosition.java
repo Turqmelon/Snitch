@@ -7,10 +7,22 @@ import org.bukkit.block.Block;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * Represents a location within Snitch. We avoid use of {@link Location} as to not load chunks unnecessarily
+ */
 public class SnitchPosition {
 
+    /**
+     * The stored X value
+     */
     private int x;
+    /**
+     * The stored Y value
+     */
     private int y;
+    /**
+     * The stored Z value
+     */
     private int z;
 
     public SnitchPosition(ResultSet set) throws SQLException {

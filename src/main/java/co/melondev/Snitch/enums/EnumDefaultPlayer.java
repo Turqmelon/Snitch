@@ -6,6 +6,9 @@ import co.melondev.Snitch.entities.SnitchPlayer;
 import java.sql.SQLException;
 import java.util.UUID;
 
+/**
+ * A list of default actors. These are prefixed by "S-" in storage to prevent collisions with actual players.
+ */
 public enum EnumDefaultPlayer {
 
     DRAGON("Dragon", "123e4567-e89b-42d3-a456-556642440001"),
@@ -26,6 +29,12 @@ public enum EnumDefaultPlayer {
         this.uuid = UUID.fromString(uuid);
     }
 
+    /**
+     * Get this actor as a Snitch Player.
+     *
+     * @return the SnitchPlayer object for this player
+     * @throws SQLException if there are issues retrieving the data
+     */
     public SnitchPlayer getSnitchPlayer() throws SQLException {
         return SnitchPlugin.getInstance().getStorage().getPlayer(getStorageName());
     }

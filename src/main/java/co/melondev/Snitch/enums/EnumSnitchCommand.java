@@ -22,9 +22,14 @@ import java.util.Random;
 
 /**
  * Created by Devon on 7/13/18.
+ *
+ * Handles command logic for Snitch
  */
 public enum EnumSnitchCommand {
 
+    /**
+     * Provides an in-game reference for available actions
+     */
     ACTIONS(Arrays.asList("actions", "a"), "", "View list of actions", "snitch.actions") {
         @Override
         public void run(CommandSender sender, List<String> args) throws SQLException {
@@ -40,6 +45,9 @@ public enum EnumSnitchCommand {
             sender.sendMessage(MsgUtil.info("Specific: §f" + String.join(", ", fullNames)));
         }
     },
+    /**
+     * Provides an in-game reference for available params with examples
+     */
     PARAMS(Arrays.asList("params", "p"), "", "View list of params", "snitch.params") {
         @Override
         public void run(CommandSender sender, List<String> args) throws SQLException {
@@ -60,6 +68,9 @@ public enum EnumSnitchCommand {
             sender.sendMessage(MsgUtil.info("Rollback Example: §6/snitch rb " + rollbackExample.toString()));
         }
     },
+    /**
+     * Runs a {@link SnitchRollback} against the provided {@link SnitchQuery}
+     */
     ROLLBACK(Arrays.asList("rollback", "rb"), "<params>", "Perform a rollback", "snitch.rollback") {
         @Override
         public void run(CommandSender sender, List<String> args) throws SQLException {
@@ -80,6 +91,9 @@ public enum EnumSnitchCommand {
             }
         }
     },
+    /**
+     * Runs a {@link SnitchRestore} using the provided {@link SnitchQuery}
+     */
     RESTORE(Arrays.asList("restore", "rs"), "<params>", "Restore changes from a rollback", "snitch.restore") {
         @Override
         public void run(CommandSender sender, List<String> args) throws SQLException {
@@ -100,6 +114,9 @@ public enum EnumSnitchCommand {
             }
         }
     },
+    /**
+     * Runs a {@link SnitchPreview} using the provided {@link SnitchQuery}
+     */
     PREVIEW(Arrays.asList("preview", "pv"), "<params>", "Perform a rollback preview", "snitch.preview") {
         @Override
         public void run(CommandSender sender, List<String> args) throws SQLException {
@@ -146,6 +163,9 @@ public enum EnumSnitchCommand {
             }
         }
     },
+    /**
+     * Lookup records using the provided {@link SnitchQuery}
+     */
     LOOKUP(Arrays.asList("lookup", "l"), "<params>", "Perform a lookup", "snitch.lookup") {
         @Override
         public void run(CommandSender sender, List<String> args) throws SQLException {
@@ -166,6 +186,9 @@ public enum EnumSnitchCommand {
             }
         }
     },
+    /**
+     * Performs a {@link EnumParam#RADIUS} lookup quickly
+     */
     NEAR(Arrays.asList("near"), "[range]", "Perform a quick area lookup", "snitch.near") {
         @Override
         public void run(CommandSender sender, List<String> args) throws SQLException {
@@ -196,6 +219,9 @@ public enum EnumSnitchCommand {
             }
         }
     },
+    /**
+     * Teleports to a {@link SnitchEntry} from within a {@link SnitchSession}
+     */
     TELEPORT(Arrays.asList("teleport", "tp"), "<#>", "Teleport to a log entry", "snitch.teleport") {
         @Override
         public void run(CommandSender sender, List<String> args) throws SQLException {
@@ -232,6 +258,9 @@ public enum EnumSnitchCommand {
             }
         }
     },
+    /**
+     * Toggle the inspector - allowing lookup by clicking blocks
+     */
     INSPECTOR(Arrays.asList("inspect", "i"), "", "Toggle the inspector", "snitch.inspector") {
         @Override
         public void run(CommandSender sender, List<String> args) {
@@ -253,6 +282,9 @@ public enum EnumSnitchCommand {
             }
         }
     },
+    /**
+     * Navigate to the next page in a {@link SnitchSession}
+     */
     NEXT(Arrays.asList("next"), "", "Go to next page", "snitch.lookup") {
         @Override
         public void run(CommandSender sender, List<String> args) throws SQLException {
@@ -272,6 +304,9 @@ public enum EnumSnitchCommand {
             }
         }
     },
+    /**
+     * Navigate to the previous page in a {@link SnitchSession}
+     */
     PREVIOUS(Arrays.asList("prev"), "", "Go to previous page", "snitch.lookup") {
         @Override
         public void run(CommandSender sender, List<String> args) throws SQLException {
@@ -296,7 +331,10 @@ public enum EnumSnitchCommand {
             }
         }
     },
-    PAGE(Arrays.asList("page", "pv"), "<page>", "Go to specific page", "snitch.lookup") {
+    /**
+     * Navigate to a specific page within a {@link SnitchSession}
+     */
+    PAGE(Arrays.asList("page", "pg"), "<page>", "Go to specific page", "snitch.lookup") {
         @Override
         public void run(CommandSender sender, List<String> args) throws SQLException {
             if ((sender instanceof Player)) {
@@ -317,6 +355,9 @@ public enum EnumSnitchCommand {
             }
         }
     },
+    /**
+     * Drain surrounding liquids (water, lava) in the provided radius
+     */
     DRAIN(Arrays.asList("drain", "dr"), "[radius]", "Drain liquids", "snitch.drain") {
         @Override
         public void run(CommandSender sender, List<String> args) throws SQLException {
@@ -348,6 +389,9 @@ public enum EnumSnitchCommand {
             }
         }
     },
+    /**
+     * Undo the last activity performed in a {@link SnitchSession}
+     */
     UNDO(Arrays.asList("undo", "un"), "", "Undo last rollback or restore", "snitch.undo") {
         @Override
         public void run(CommandSender sender, List<String> args) throws SQLException {
@@ -384,6 +428,9 @@ public enum EnumSnitchCommand {
             }
         }
     },
+    /**
+     * Removes fire within the provided radius
+     */
     EXTINGUISH(Arrays.asList("extinguish", "ex"), "[radius]", "Extinguish fires", "snitch.extinguish") {
         @Override
         public void run(CommandSender sender, List<String> args) throws SQLException {
@@ -428,6 +475,15 @@ public enum EnumSnitchCommand {
         this.permission = permission;
     }
 
+    /**
+     * Gets a player session, or create one if it doesn't exist
+     *
+     * @param player  the player using this session
+     * @param query   the query being used
+     * @param entries the entries that were returned by this query
+     * @param page    the page
+     * @return the session
+     */
     private static SnitchSession getOrCreateSession(Player player, SnitchQuery query, List<SnitchEntry> entries, int page) {
         SnitchSession session = SnitchPlugin.getInstance().getPlayerManager().getSession(player);
         if (session == null) {
@@ -440,6 +496,11 @@ public enum EnumSnitchCommand {
         return session;
     }
 
+    /**
+     * Get a command with the matching label or alias
+     * @param label     the command label
+     * @return the matching command
+     */
     public static EnumSnitchCommand getByCommand(String label) {
         for (EnumSnitchCommand cmd : values()) {
             if (cmd.getCommands().contains(label.toLowerCase())) {
@@ -449,6 +510,12 @@ public enum EnumSnitchCommand {
         return null;
     }
 
+    /**
+     * Handles command logic
+     * @param sender        the command sender
+     * @param args          the arguments of the command
+     * @throws SQLException if there's any database errors
+     */
     public abstract void run(CommandSender sender, List<String> args) throws SQLException;
 
     public List<String> getCommands() {

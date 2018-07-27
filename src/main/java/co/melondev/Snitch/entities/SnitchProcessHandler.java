@@ -4,6 +4,8 @@ import co.melondev.Snitch.enums.EnumSnitchActivity;
 
 /**
  * Created by Devon on 7/14/18.
+ *
+ * Implemented by actions to determine how to handle rollback, restores, and previews - as well as what activities they support.
  */
 public interface SnitchProcessHandler {
 

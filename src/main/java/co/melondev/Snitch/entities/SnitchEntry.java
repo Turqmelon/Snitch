@@ -10,15 +10,45 @@ import com.google.gson.JsonParser;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+
+/**
+ * Contains all details related to an entry in our logs table.
+ */
 public class SnitchEntry {
 
+    /**
+     * The internal record ID, as decided by our database of choice.
+     */
     private int id;
+    /**
+     * The action that was recorded.
+     */
     private EnumAction action;
+    /**
+     * The player or actor that performed this action.
+     */
     private SnitchPlayer snitchPlayer;
+    /**
+     * The world that this action happened within.
+     */
     private SnitchWorld snitchWorld;
+    /**
+     * The position that this happened at.
+     * By not using {@link org.bukkit.Location}, we avoid loading chunks needlessly
+     */
     private SnitchPosition snitchPosition;
+    /**
+     * The unix timestamp of this event
+     */
     private long timestamp;
+    /**
+     * Any relavent metadata that was recorded.
+     * This format is parsed and written by {@link co.melondev.Snitch.util.JsonUtil}
+     */
     private JsonObject data;
+    /**
+     * Whether or not this entry has been reverted
+     */
     private boolean reverted;
 
     public SnitchEntry(int id, EnumAction action, SnitchPlayer snitchPlayer, SnitchWorld snitchWorld, SnitchPosition snitchPosition, long timestamp, JsonObject data, boolean reverted) {
@@ -32,6 +62,12 @@ public class SnitchEntry {
         this.reverted = reverted;
     }
 
+    /**
+     * Takes a {@link ResultSet} as returned from querying our logs table
+     *
+     * @param set the set of results for this roe
+     * @throws SQLException if there are any database errors thrown
+     */
     public SnitchEntry(ResultSet set) throws SQLException {
         this.id = set.getInt("id");
         this.action = EnumAction.getById(set.getInt("action_id"));
@@ -43,10 +79,18 @@ public class SnitchEntry {
         this.reverted = set.getInt("is_reverted") == 1;
     }
 
+    /**
+     * Returns the time in which this action happened
+     * @return the unix timestamp of when this activity took place
+     */
     public long getTimestamp() {
         return timestamp;
     }
 
+    /**
+     * Gets a short explanation of what happened, replacing any necessary variables
+     * @return a formatted, color coded, accurate description of the event that took place
+     */
     public String getDescriptor() {
         String base = getAction().getExplained();
         String crossout = isReverted() ? "§m" : "";
@@ -67,10 +111,18 @@ public class SnitchEntry {
         return base;
     }
 
+    /**
+     *
+     * @return whether or not this action has been rolled back
+     */
     public boolean isReverted(){
         return reverted;
     }
 
+    /**
+     * Sets the cached value for whether or not this entry was rolled back
+     * @param reverted  whether or not this entry was reverted
+     */
     public void setReverted(boolean reverted) {
         this.reverted = reverted;
     }

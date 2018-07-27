@@ -6,13 +6,25 @@ import org.bukkit.entity.Player;
 
 /**
  * Created by Devon on 7/14/18.
+ *
+ * A restore will rebuild entries into the world as they were originally logged.
  */
 public class SnitchRestore extends SnitchPreview {
+
+    /**
+     * Provide a session and a callback to begin.
+     *
+     * @param session  the session (the player, query, etc.)
+     * @param callback the callback to run upon completion
+     */
     public SnitchRestore(SnitchSession session, SnitchCallback callback) {
         super(session, callback);
         activity = EnumSnitchActivity.RESTORE;
     }
 
+    /**
+     * The default callback for restores
+     */
     public static class DefaultRestoreCallback implements SnitchCallback {
 
         private long startTime;
