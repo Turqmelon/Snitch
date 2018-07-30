@@ -142,9 +142,9 @@ The **Actor** parameter allows you to specify changes done by a specific player,
 * Accepts: One or multiple entries
 * Examples: `Turqmelon`, `S-TNT`, `S-Enderman`
 
-* `/lb l player Turqmelon`
-* `/lb l actor S-TNT`
-* `/lb l players Turqmelon JustPants Rhonim`
+* `/snitch l player Turqmelon`
+* `/snitch l actor S-TNT`
+* `/snitch l players Turqmelon JustPants Rhonim`
 
 ### Snitch Actors
 Snitch maintains an internal player list used for frequent logs. We prefix these actor names with `S-` as to not collide with any real MC names.
@@ -158,9 +158,9 @@ The **Action** parameters allows you to narrow down your activities by specific 
 * Accepts: One or multiple entries
 * Examples: `break`, `explode`, `chat`, `block_explode`
 
-* `/lb l action burn`
-* `/lb l action chat`
-* `/lb l player Turqmelon action break`
+* `/snitch l action burn`
+* `/snitch l action chat`
+* `/snitch l player Turqmelon action break`
 
 ## Since
 The **Since** parameter allows you to narrow down your results to happening _after_ a specific time.
@@ -169,8 +169,8 @@ The **Since** parameter allows you to narrow down your results to happening _aft
 * Accepts: A specific date or a relative time
 * Examples: `07/01/18`, `1d`, `30m`
 
-* `/lb l player Turqmelon since 10m`
-* `/lb l action chat since 1d`
+* `/snitch l player Turqmelon since 10m`
+* `/snitch l action chat since 1d`
 
 ## Before 
 The **Before** parameter allows you to narrow down your results to happening _before_ a specific time.
@@ -179,8 +179,8 @@ The **Before** parameter allows you to narrow down your results to happening _be
 * Accepts: A specific date or relative time
 * Examples: `07/01/18`, `1d`, `30m`
 
-* `/lb l player Turqmelon since 7d before 6d`
-* `/lb l action break before 07/02/18 since 06/30/18`
+* `/snitch l player Turqmelon since 7d before 6d`
+* `/snitch l action break before 07/02/18 since 06/30/18`
 
 ## World
 The **World** parameter allows you to reference a specific world. If you leave this out, it'll default to searching globally. (If you specify the Range paramater, this will be automatically set as your current world.)
@@ -189,8 +189,8 @@ The **World** parameter allows you to reference a specific world. If you leave t
 * Accepts: A single world
 * Examples: `world_nether`
 
-* `/lb l player Turqmelon world world_nether`
-* `/lb l action explode world skyworld`
+* `/snitch l player Turqmelon world world_nether`
+* `/snitch l action explode world skyworld`
 
 ## Radius
 The **Radius** parameter filters down your search to a specific area. If you don't specify a location with the **Coords** param, your own location will be used, and if you don't specify a **World**, your own world will be used. Don't specify this parameter for a global lookup.
@@ -199,9 +199,9 @@ The **Radius** parameter filters down your search to a specific area. If you don
 * Accepts: A single number
 * Examples: `5`, `20`
 
-* `/lb l area 20`
-* `/lb l player Turqmelon area 50`
-* `/lb l action burn range 5`
+* `/snitch l area 20`
+* `/snitch l player Turqmelon area 50`
+* `/snitch l action burn range 5`
 
 ## Coords
 The **Coords** parameter allows you to use a location other then your own as the lookup point. This is primarily used with the **Range** param to search places you're not.
@@ -210,5 +210,5 @@ The **Coords** parameter allows you to use a location other then your own as the
 * Accepts: A set of coordinates
 * Examples: `100 150 100`
 
-* `/lb l area 20 relative 100 150 100 world skyworld`
+* `/snitch l area 20 relative 100 150 100 world skyworld`
 
