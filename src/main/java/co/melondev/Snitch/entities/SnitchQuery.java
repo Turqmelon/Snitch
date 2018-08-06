@@ -338,7 +338,9 @@ public class SnitchQuery {
 
         Validate.isTrue(paramParsed, "No valid parameters specified.");
 
-        analyzePermissions(player);
+        if (player != null) {
+            analyzePermissions(player);
+        }
         return true;
     }
 

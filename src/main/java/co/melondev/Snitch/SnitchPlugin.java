@@ -1,17 +1,22 @@
 package co.melondev.Snitch;
 
 import co.melondev.Snitch.commands.SnitchCommand;
+import co.melondev.Snitch.entities.SnitchQuery;
 import co.melondev.Snitch.listeners.*;
 import co.melondev.Snitch.managers.PlayerManager;
 import co.melondev.Snitch.storage.MySQLStorage;
 import co.melondev.Snitch.storage.StorageMethod;
 import co.melondev.Snitch.util.Config;
+import co.melondev.Snitch.util.SnitchDatabaseException;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class SnitchPlugin extends JavaPlugin {
 
@@ -76,6 +81,25 @@ public class SnitchPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ChatListener(this), this);
 
         getCommand("snitch").setExecutor(new SnitchCommand(this));
+
+        List<String> cleanup = config.getAutocleanParams();
+        if (config.isAutoClean() && !cleanup.isEmpty() && storage != null) {
+            getLogger().info("Running " + cleanup.size() + " cleanup task(s)...");
+            for (String entry : cleanup) {
+                async(() -> {
+                    try {
+                        SnitchQuery query = new SnitchQuery();
+                        List<String> args = new ArrayList<>();
+                        args.addAll(Arrays.asList(entry.split(" ")));
+                        query.parseParams(null, args);
+                        int toDelete = getStorage().deleteEntries(query);
+                        getLogger().info("Executed \"" + entry + "\": Deleted " + toDelete + " record(s).");
+                    } catch (SnitchDatabaseException | IllegalArgumentException ex) {
+                        getLogger().severe("Error executing cleanup task \"" + entry + "\": " + ex.getMessage());
+                    }
+                });
+            }
+        }
     }
 
     public Config getConfiguration() {
