@@ -174,7 +174,7 @@ public class BlockListener implements Listener {
                 i.async(() -> {
                     try {
                         SnitchQuery query = new SnitchQuery().relativeTo(new SnitchPosition(block.getLocation()))
-                                .inWorld(block.getWorld()).exactPosition();
+                                .inWorld(block.getWorld()).since(0).limit(50).exactPosition();
                         List<SnitchEntry> entries = i.getStorage().performLookup(query);
                         MsgUtil.sendRecords(player, query, entries, 1, 7);
                     } catch (SnitchDatabaseException e) {
@@ -198,7 +198,7 @@ public class BlockListener implements Listener {
                 i.async(() -> {
                     try {
                         SnitchQuery query = new SnitchQuery().relativeTo(new SnitchPosition(target.getLocation()))
-                                .inWorld(target.getWorld()).exactPosition();
+                                .inWorld(target.getWorld()).since(0).limit(50).exactPosition();
                         List<SnitchEntry> entries = i.getStorage().performLookup(query);
                         MsgUtil.sendRecords(player, query, entries, 1, 7);
                     } catch (SnitchDatabaseException e) {
