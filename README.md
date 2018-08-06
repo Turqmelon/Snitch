@@ -45,6 +45,30 @@ Commands in Snitch are super easy to get the hang of. We'll cover the basics, fi
 * `/snitch drain|dr [radius]` drain all liquids in the provided radius. Defaults to 10 if not specified.
 * `/snitch extinguish|ex [radius]` extinguishes all fires in the provided radius. Defaults to 10 if not specified.
 
+# Permissions
+
+Snitch has very configurable permissions so you can give exactly what you want to each player or staff member.
+
+* `snitch.actions` - Grants access to the **/snitch actions** command
+* `snitch.params` - Grants access to the **/snitch params** command
+* `snitch.rollback` - Grants access to the **/snitch rollback** command. _(This permission is not required to apply rollback previews.)_
+* `snitch.restore` - Grants access to the **/snitch restore** command. _(This permission is not required to undo a messed up rollback.)_
+* `snitch.delete` - Grants access to the **/snitch delete** command. _(DANGEROUS!)_
+* `snitch.preview` - Grants access to the **/snitch preview** command. _(Also grants the user access to perform rollbacks via /snitch pv apply.)_
+* `snitch.lookup` - Grants access to the **/snitch lookup** command. This permission also grants access to **/snitch next**, **/snitch prev** and **/snitch page**.
+* `snitch.near` - Grants access to the **/snitch near** command. _(This will not grant them /snitch lookup. Near is a much more restricted lookup view.)_
+* `snitch.teleport` - Grants access to the **/snitch teleport** command, and the ability to click on entries.
+* `snitch.inspector` - Grants access to the **/snitch inspector** command.
+* `snitch.drain` - Grants access to the **/snitch drain** command.
+* `snitch.extinguish` - Grants access to the **/snitch ex** command.
+* `snitch.undo` - Grants access to the **/snitch undo** command, to quickly reverse a restore or rollback
+* `snitch.actions.all` - Grants access to ALL actions to use within commands the user has access to
+* `snitch.action.<action>` - Grants access to a specific action to use within commands the user has access to. _(View the list of actions in /snitch actions)_
+* `snitch.range.global` - Allows the user to not specify a range for their activites. If they don't have permission, then a range MUST be provided.
+* `snitch.viewdata.ip` - Allows users to see IP addresses of players if you log player joins
+* `snitch.tool` - Permits the user to use Snitch inspector tools
+* `snitch.notify` - Allows the user to receive notifications for rollbacks and restores
+
 ---
 # Using Snitch
 If you've ever used a logging or rollback plugin before, learning Snitch will be a snap. There are no complicated syntax or symbol formats to remember, just the data you want to search by.
