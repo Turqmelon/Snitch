@@ -142,7 +142,6 @@ public enum EnumSnitchCommand {
                     return;
                 }
                 EnumSnitchCommand.getOrCreateSession(player, query, entryList, 1);
-                MsgUtil.sendRecords(sender, query, entryList, 1, 7);
                 player.sendMessage(MsgUtil.info("Pending delete: " + query.getSearchSummary()));
                 player.sendMessage(MsgUtil.record("§cThis will delete §l" + entryList.size() + "§c records FOREVER!"));
                 player.sendMessage(MsgUtil.record("To confirm, use §f/snitch del confirm§7."));
