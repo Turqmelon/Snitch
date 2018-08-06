@@ -127,7 +127,6 @@ public enum EnumSnitchCommand {
                         int deleted = SnitchPlugin.getInstance().getStorage().deleteEntries(session.getQuery());
                         player.sendMessage(MsgUtil.success("Successfully deleted " + deleted + " entries."));
                         player.sendMessage(MsgUtil.record("It's like they were never there."));
-                        session.getEntries().clear();
                         return;
                     } else {
                         sender.sendMessage(MsgUtil.error("There are no entries to delete. Use \"/snitch delete <params>\", first."));
