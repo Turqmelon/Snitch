@@ -3,6 +3,7 @@ package co.melondev.Snitch.entities;
 import co.melondev.Snitch.SnitchPlugin;
 import co.melondev.Snitch.enums.EnumAction;
 import co.melondev.Snitch.enums.EnumParam;
+import co.melondev.Snitch.util.SnitchDatabaseException;
 import org.apache.commons.lang.Validate;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -150,7 +151,7 @@ public class SnitchQuery {
      * @return this {@link SnitchQuery}
      * @throws SQLException if this world can't be matched to a {@link SnitchWorld}
      */
-    public SnitchQuery inWorld(World world) throws SQLException {
+    public SnitchQuery inWorld(World world) throws SnitchDatabaseException {
         return inWorld(SnitchPlugin.getInstance().getStorage().register(world));
     }
 
@@ -318,7 +319,7 @@ public class SnitchQuery {
      * @return true if the params were set successfully
      * @throws SQLException     if there's any database errors
      */
-    public boolean parseParams(Player player, List<String> arguments) throws SQLException {
+    public boolean parseParams(Player player, List<String> arguments) throws SnitchDatabaseException {
 
         if (arguments.isEmpty()) {
             throw new IllegalArgumentException("No params specified.");

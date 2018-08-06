@@ -2,6 +2,7 @@ package co.melondev.Snitch.enums;
 
 import co.melondev.Snitch.SnitchPlugin;
 import co.melondev.Snitch.entities.SnitchPlayer;
+import co.melondev.Snitch.util.SnitchDatabaseException;
 
 import java.sql.SQLException;
 import java.util.UUID;
@@ -35,7 +36,7 @@ public enum EnumDefaultPlayer {
      * @return the SnitchPlayer object for this player
      * @throws SQLException if there are issues retrieving the data
      */
-    public SnitchPlayer getSnitchPlayer() throws SQLException {
+    public SnitchPlayer getSnitchPlayer() throws SnitchDatabaseException {
         return SnitchPlugin.getInstance().getStorage().getPlayer(getStorageName());
     }
 

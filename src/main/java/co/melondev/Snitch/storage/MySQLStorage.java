@@ -3,10 +3,12 @@ package co.melondev.Snitch.storage;
 import co.melondev.Snitch.SnitchPlugin;
 import co.melondev.Snitch.entities.*;
 import co.melondev.Snitch.enums.EnumAction;
+import co.melondev.Snitch.util.SnitchDatabaseException;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.World;
 
@@ -206,7 +208,7 @@ public class MySQLStorage implements StorageMethod {
     }
 
     @Override
-    public SnitchWorld register(World world) throws SQLException {
+    public SnitchWorld register(World world) throws SnitchDatabaseException {
         if (worldNameMap.containsKey(world.getName().toLowerCase())) {
             return worldNameMap.get(world.getName().toLowerCase());
         }
@@ -222,6 +224,8 @@ public class MySQLStorage implements StorageMethod {
                     return w;
                 }
             }
+        } catch (SQLException ex) {
+            throw new SnitchDatabaseException(ex);
         }
         return null;
     }
@@ -232,7 +236,7 @@ public class MySQLStorage implements StorageMethod {
     }
 
     @Override
-    public SnitchPlayer registerPlayer(String playerName, UUID uuid) throws SQLException {
+    public SnitchPlayer registerPlayer(String playerName, UUID uuid) throws SnitchDatabaseException {
 
         SnitchPlayer cached = playerUUIDCache.getIfPresent(uuid);
         if (cached != null) {
@@ -242,6 +246,8 @@ public class MySQLStorage implements StorageMethod {
                     upd.setString(1, playerName);
                     upd.setString(2, upd.toString());
                     upd.execute();
+                } catch (SQLException ex) {
+                    throw new SnitchDatabaseException(ex);
                 }
             }
             return cached;
@@ -266,6 +272,8 @@ public class MySQLStorage implements StorageMethod {
                     return snitchPlayer;
                 }
             }
+        } catch (SQLException ex) {
+            throw new SnitchDatabaseException(ex);
         }
 
         return null;
@@ -278,7 +286,7 @@ public class MySQLStorage implements StorageMethod {
     }
 
     @Override
-    public SnitchPlayer getPlayer(UUID uuid) throws SQLException {
+    public SnitchPlayer getPlayer(UUID uuid) throws SnitchDatabaseException {
         SnitchPlayer pl = playerUUIDCache.getIfPresent(uuid);
         if (pl != null) {
             return pl;
@@ -292,12 +300,14 @@ public class MySQLStorage implements StorageMethod {
                     return pl;
                 }
             }
+        } catch (SQLException ex) {
+            throw new SnitchDatabaseException(ex);
         }
         return null;
     }
 
     @Override
-    public SnitchPlayer getPlayer(String playerName) throws SQLException {
+    public SnitchPlayer getPlayer(String playerName) throws SnitchDatabaseException {
         SnitchPlayer pl = playerUUIDCache.getIfPresent(playerName.toLowerCase());
         if (pl != null) {
             return pl;
@@ -311,12 +321,14 @@ public class MySQLStorage implements StorageMethod {
                     return pl;
                 }
             }
+        } catch (SQLException ex) {
+            throw new SnitchDatabaseException(ex);
         }
         return null;
     }
 
     @Override
-    public SnitchEntry record(EnumAction action, SnitchPlayer player, SnitchWorld world, SnitchPosition position, JsonObject data, long time) throws SQLException {
+    public SnitchEntry record(EnumAction action, SnitchPlayer player, SnitchWorld world, SnitchPosition position, JsonObject data, long time) throws SnitchDatabaseException {
         try (Connection conn = getConnection(); PreparedStatement ins = conn.prepareStatement("" +
                 "INSERT INTO " + tble("logs") + " (action_id, player_id, world_id, pos_x, pos_y, pos_z, timestamp, data) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             ins.setInt(1, action.getId());
@@ -334,26 +346,37 @@ public class MySQLStorage implements StorageMethod {
                     return new SnitchEntry(id, action, player, world, position, time, data, false);
                 }
             }
+        } catch (SQLException ex) {
+            throw new SnitchDatabaseException(ex);
         }
         return null;
     }
 
     @Override
-    public ImmutableList<SnitchEntry> performLookup(SnitchQuery query) throws SQLException {
+    public ImmutableList<SnitchEntry> performLookup(SnitchQuery query) throws SnitchDatabaseException {
         List<SnitchEntry> results = new ArrayList<>();
         String sql = buildLookupQuery(query);
         try (Connection conn = getConnection(); PreparedStatement sel = conn.prepareStatement(sql)) {
             try (ResultSet set = sel.executeQuery()) {
                 while (set.next()) {
-                    results.add(new SnitchEntry(set));
+                    results.add(new SnitchEntry(set.getInt("id"),
+                            EnumAction.getById(set.getInt("action_id")),
+                            getPlayer(set.getInt("player_id")),
+                            getWorld(set.getInt("world_id")),
+                            new SnitchPosition(set.getInt("pos_x"), set.getInt("pos_y"), set.getInt("pos_z")),
+                            set.getLong("timestamp"),
+                            new JsonParser().parse("data").getAsJsonObject(),
+                            set.getInt("is_reverted") == 1));
                 }
             }
+        } catch (SQLException ex) {
+            throw new SnitchDatabaseException(ex);
         }
         return ImmutableList.copyOf(results);
     }
 
     @Override
-    public SnitchPlayer getPlayer(int playerID) throws SQLException {
+    public SnitchPlayer getPlayer(int playerID) throws SnitchDatabaseException {
         SnitchPlayer cached = playerIDCache.getIfPresent(playerID);
         if (cached != null) {
             return cached;
@@ -367,6 +390,8 @@ public class MySQLStorage implements StorageMethod {
                     return snitchPlayer;
                 }
             }
+        } catch (SQLException ex) {
+            throw new SnitchDatabaseException(ex);
         }
         return null;
     }
@@ -450,12 +475,14 @@ public class MySQLStorage implements StorageMethod {
     }
 
     @Override
-    public void markReverted(SnitchEntry entry, boolean reverted) throws SQLException {
+    public void markReverted(SnitchEntry entry, boolean reverted) throws SnitchDatabaseException {
         entry.setReverted(reverted);
         try (Connection conn = getConnection(); PreparedStatement upd = conn.prepareStatement("UPDATE " + tble("logs" + " SET is_reverted = ? WHERE id = ?;"))) {
             upd.setInt(1, reverted ? 1 : 0);
             upd.setInt(2, entry.getId());
             upd.execute();
+        } catch (SQLException ex) {
+            throw new SnitchDatabaseException(ex);
         }
     }
 

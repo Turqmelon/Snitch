@@ -7,6 +7,7 @@ import co.melondev.Snitch.enums.EnumDefaultPlayer;
 import co.melondev.Snitch.util.InvUtil;
 import co.melondev.Snitch.util.JsonUtil;
 import co.melondev.Snitch.util.MsgUtil;
+import co.melondev.Snitch.util.SnitchDatabaseException;
 import com.google.gson.JsonObject;
 import org.bukkit.Material;
 import org.bukkit.TreeType;
@@ -30,7 +31,6 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -105,7 +105,7 @@ public class BlockListener implements Listener {
                     d.add("block", JsonUtil.jsonify(block));
                 }
                 i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
-            } catch (SQLException ex) {
+            } catch (SnitchDatabaseException ex) {
                 ex.printStackTrace();
             }
         });
@@ -122,7 +122,7 @@ public class BlockListener implements Listener {
                     d.add("block", JsonUtil.jsonify(block));
                 }
                 i.getStorage().record(action, defaultPlayer.getSnitchPlayer(), world, position, d, System.currentTimeMillis());
-            } catch (SQLException ex) {
+            } catch (SnitchDatabaseException ex) {
                 ex.printStackTrace();
             }
         });
@@ -177,7 +177,7 @@ public class BlockListener implements Listener {
                                 .inWorld(block.getWorld()).exactPosition();
                         List<SnitchEntry> entries = i.getStorage().performLookup(query);
                         MsgUtil.sendRecords(player, query, entries, 1, 7);
-                    } catch (SQLException e) {
+                    } catch (SnitchDatabaseException e) {
                         e.printStackTrace();
                     }
                 });
@@ -201,7 +201,7 @@ public class BlockListener implements Listener {
                                 .inWorld(target.getWorld()).exactPosition();
                         List<SnitchEntry> entries = i.getStorage().performLookup(query);
                         MsgUtil.sendRecords(player, query, entries, 1, 7);
-                    } catch (SQLException e) {
+                    } catch (SnitchDatabaseException e) {
                         e.printStackTrace();
                     }
                 });

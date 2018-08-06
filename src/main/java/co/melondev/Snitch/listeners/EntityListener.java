@@ -9,6 +9,7 @@ import co.melondev.Snitch.enums.EnumDefaultPlayer;
 import co.melondev.Snitch.util.InvUtil;
 import co.melondev.Snitch.util.ItemUtil;
 import co.melondev.Snitch.util.JsonUtil;
+import co.melondev.Snitch.util.SnitchDatabaseException;
 import com.google.gson.JsonObject;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -31,8 +32,6 @@ import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.InventoryHolder;
-
-import java.sql.SQLException;
 
 public class EntityListener implements Listener {
 
@@ -58,7 +57,7 @@ public class EntityListener implements Listener {
                     d.add("entity", JsonUtil.jsonify(entity));
                 }
                 i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
-            } catch (SQLException ex) {
+            } catch (SnitchDatabaseException ex) {
                 ex.printStackTrace();
             }
         });
@@ -80,7 +79,7 @@ public class EntityListener implements Listener {
                     d.add("entity", JsonUtil.jsonify(entity));
                 }
                 i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
-            } catch (SQLException ex) {
+            } catch (SnitchDatabaseException ex) {
                 ex.printStackTrace();
             }
         });
@@ -102,7 +101,7 @@ public class EntityListener implements Listener {
                     d.add("block", JsonUtil.jsonify(block));
                 }
                 i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
-            } catch (SQLException ex) {
+            } catch (SnitchDatabaseException ex) {
                 ex.printStackTrace();
             }
         });

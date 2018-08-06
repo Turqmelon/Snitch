@@ -21,6 +21,12 @@ import java.util.UUID;
  */
 public class EntityUtil {
 
+    /**
+     * Rebuilds an entity to match the metadata
+     *
+     * @param entity     the entity to rebuild
+     * @param entityData the metadata to apply
+     */
     public static void rebuildEntity(Entity entity, JsonObject entityData) {
         entity.setFireTicks(entityData.get("fire").getAsInt());
         entity.setCustomNameVisible(entityData.get("nameVisible").getAsBoolean());
@@ -250,6 +256,11 @@ public class EntityUtil {
         }
     }
 
+    /**
+     * Re-creates EulerAngle to match the metadata
+     * @param obj       the metadata
+     * @return the rebuilt angle
+     */
     private static EulerAngle rebuildAngle(JsonObject obj) {
         double x = obj.get("x").getAsDouble();
         double y = obj.get("y").getAsDouble();

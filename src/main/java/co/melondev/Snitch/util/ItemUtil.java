@@ -27,12 +27,18 @@ import static org.bukkit.potion.PotionEffectType.*;
 
 public class ItemUtil {
 
+    /**
+     * A map of negative potion effects. We'll never re-apply these.
+     */
     public static final PotionEffectType[] POSITIVE_POTIONS = {
             SPEED, FAST_DIGGING, INCREASE_DAMAGE, HEAL, JUMP,
             REGENERATION, DAMAGE_RESISTANCE, FIRE_RESISTANCE, WATER_BREATHING,
             INVISIBILITY, NIGHT_VISION, HEALTH_BOOST, ABSORPTION, SATURATION
     };
 
+    /**
+     * Used for UI purposes.
+     */
     public static final Enchantment GLOW = new Enchantment(9999) {
 
         @Override

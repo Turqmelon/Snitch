@@ -4,9 +4,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 /**
  * Represents a location within Snitch. We avoid use of {@link Location} as to not load chunks unnecessarily
  */
@@ -24,12 +21,6 @@ public class SnitchPosition {
      * The stored Z value
      */
     private int z;
-
-    public SnitchPosition(ResultSet set) throws SQLException {
-        this.x = set.getInt("pos_x");
-        this.y = set.getInt("pos_y");
-        this.z = set.getInt("pos_z");
-    }
 
     public SnitchPosition(Location location){
         this(location.getBlockX(), location.getBlockY(), location.getBlockZ());

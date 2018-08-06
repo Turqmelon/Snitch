@@ -5,6 +5,7 @@ import co.melondev.Snitch.entities.*;
 import co.melondev.Snitch.util.AdjustedBlock;
 import co.melondev.Snitch.util.BlockUtil;
 import co.melondev.Snitch.util.MsgUtil;
+import co.melondev.Snitch.util.SnitchDatabaseException;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
@@ -32,7 +33,7 @@ public enum EnumSnitchCommand {
      */
     ACTIONS(Arrays.asList("actions", "a"), "", "View list of actions", "snitch.actions") {
         @Override
-        public void run(CommandSender sender, List<String> args) throws SQLException {
+        public void run(CommandSender sender, List<String> args) throws SnitchDatabaseException {
             List<String> generals = new ArrayList<>();
             List<String> fullNames = new ArrayList<>();
             for (EnumAction action : EnumAction.values()) {
@@ -50,7 +51,7 @@ public enum EnumSnitchCommand {
      */
     PARAMS(Arrays.asList("params", "p"), "", "View list of params", "snitch.params") {
         @Override
-        public void run(CommandSender sender, List<String> args) throws SQLException {
+        public void run(CommandSender sender, List<String> args) throws SnitchDatabaseException {
             sender.sendMessage(MsgUtil.info("Params"));
             StringBuilder lookupExample = new StringBuilder();
             StringBuilder rollbackExample = new StringBuilder();
@@ -73,7 +74,7 @@ public enum EnumSnitchCommand {
      */
     ROLLBACK(Arrays.asList("rollback", "rb"), "<params>", "Perform a rollback", "snitch.rollback") {
         @Override
-        public void run(CommandSender sender, List<String> args) throws SQLException {
+        public void run(CommandSender sender, List<String> args) throws SnitchDatabaseException {
             if ((sender instanceof Player)) {
                 Player player = (Player) sender;
 
@@ -96,7 +97,7 @@ public enum EnumSnitchCommand {
      */
     RESTORE(Arrays.asList("restore", "rs"), "<params>", "Restore changes from a rollback", "snitch.restore") {
         @Override
-        public void run(CommandSender sender, List<String> args) throws SQLException {
+        public void run(CommandSender sender, List<String> args) throws SnitchDatabaseException {
             if ((sender instanceof Player)) {
                 Player player = (Player) sender;
 
@@ -119,7 +120,7 @@ public enum EnumSnitchCommand {
      */
     PREVIEW(Arrays.asList("preview", "pv"), "<params>", "Perform a rollback preview", "snitch.preview") {
         @Override
-        public void run(CommandSender sender, List<String> args) throws SQLException {
+        public void run(CommandSender sender, List<String> args) throws SnitchDatabaseException {
             if ((sender instanceof Player)) {
                 Player player = (Player) sender;
                 if (args.size() == 1) {
@@ -168,7 +169,7 @@ public enum EnumSnitchCommand {
      */
     LOOKUP(Arrays.asList("lookup", "l"), "<params>", "Perform a lookup", "snitch.lookup") {
         @Override
-        public void run(CommandSender sender, List<String> args) throws SQLException {
+        public void run(CommandSender sender, List<String> args) throws SnitchDatabaseException {
             if ((sender instanceof Player)) {
 
                 Player player = (Player) sender;
@@ -191,7 +192,7 @@ public enum EnumSnitchCommand {
      */
     NEAR(Arrays.asList("near"), "[range]", "Perform a quick area lookup", "snitch.near") {
         @Override
-        public void run(CommandSender sender, List<String> args) throws SQLException {
+        public void run(CommandSender sender, List<String> args) throws SnitchDatabaseException {
             if ((sender instanceof Player)) {
 
                 Player player = (Player) sender;
@@ -224,7 +225,7 @@ public enum EnumSnitchCommand {
      */
     TELEPORT(Arrays.asList("teleport", "tp"), "<#>", "Teleport to a log entry", "snitch.teleport") {
         @Override
-        public void run(CommandSender sender, List<String> args) throws SQLException {
+        public void run(CommandSender sender, List<String> args) throws SnitchDatabaseException {
             if ((sender instanceof Player)) {
 
                 if (args.size() == 1) {
@@ -287,7 +288,7 @@ public enum EnumSnitchCommand {
      */
     NEXT(Arrays.asList("next"), "", "Go to next page", "snitch.lookup") {
         @Override
-        public void run(CommandSender sender, List<String> args) throws SQLException {
+        public void run(CommandSender sender, List<String> args) throws SnitchDatabaseException {
             if ((sender instanceof Player)) {
                 Player player = (Player) sender;
                 SnitchSession session = SnitchPlugin.getInstance().getPlayerManager().getSession(player);
@@ -309,7 +310,7 @@ public enum EnumSnitchCommand {
      */
     PREVIOUS(Arrays.asList("prev"), "", "Go to previous page", "snitch.lookup") {
         @Override
-        public void run(CommandSender sender, List<String> args) throws SQLException {
+        public void run(CommandSender sender, List<String> args) throws SnitchDatabaseException {
             if ((sender instanceof Player)) {
                 Player player = (Player) sender;
                 SnitchSession session = SnitchPlugin.getInstance().getPlayerManager().getSession(player);
@@ -336,7 +337,7 @@ public enum EnumSnitchCommand {
      */
     PAGE(Arrays.asList("page", "pg"), "<page>", "Go to specific page", "snitch.lookup") {
         @Override
-        public void run(CommandSender sender, List<String> args) throws SQLException {
+        public void run(CommandSender sender, List<String> args) throws SnitchDatabaseException {
             if ((sender instanceof Player)) {
                 Player player = (Player) sender;
                 Validate.isTrue(args.size() == 1, "Specify page number.");
@@ -360,7 +361,7 @@ public enum EnumSnitchCommand {
      */
     DRAIN(Arrays.asList("drain", "dr"), "[radius]", "Drain liquids", "snitch.drain") {
         @Override
-        public void run(CommandSender sender, List<String> args) throws SQLException {
+        public void run(CommandSender sender, List<String> args) throws SnitchDatabaseException {
             if ((sender instanceof Player)) {
 
                 Player player = (Player) sender;
@@ -394,7 +395,7 @@ public enum EnumSnitchCommand {
      */
     UNDO(Arrays.asList("undo", "un"), "", "Undo last rollback or restore", "snitch.undo") {
         @Override
-        public void run(CommandSender sender, List<String> args) throws SQLException {
+        public void run(CommandSender sender, List<String> args) throws SnitchDatabaseException {
             if ((sender instanceof Player)) {
 
                 Player player = (Player) sender;
@@ -433,7 +434,7 @@ public enum EnumSnitchCommand {
      */
     EXTINGUISH(Arrays.asList("extinguish", "ex"), "[radius]", "Extinguish fires", "snitch.extinguish") {
         @Override
-        public void run(CommandSender sender, List<String> args) throws SQLException {
+        public void run(CommandSender sender, List<String> args) throws SnitchDatabaseException {
             if ((sender instanceof Player)) {
 
                 Player player = (Player) sender;
@@ -516,7 +517,7 @@ public enum EnumSnitchCommand {
      * @param args          the arguments of the command
      * @throws SQLException if there's any database errors
      */
-    public abstract void run(CommandSender sender, List<String> args) throws SQLException;
+    public abstract void run(CommandSender sender, List<String> args) throws SnitchDatabaseException;
 
     public List<String> getCommands() {
         return commands;

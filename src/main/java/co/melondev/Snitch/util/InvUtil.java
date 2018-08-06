@@ -15,6 +15,13 @@ import org.bukkit.inventory.ItemStack;
  */
 public class InvUtil {
 
+    /**
+     * Logs all items within a container as a removal
+     *
+     * @param player    the player who "removed" them
+     * @param inventory the inventory to loop through
+     * @param location  the location of this inventory
+     */
     public static void logContentsAsRemoval(Player player, Inventory inventory, Location location) {
         if (!EnumAction.ITEM_TAKE.isEnabled()) return;
         for (int i = 0; i < inventory.getSize(); i++) {
@@ -25,6 +32,11 @@ public class InvUtil {
         }
     }
 
+    /**
+     * Syncs an inventory to match the betadata
+     * @param inventory     the inventory to sync
+     * @param invData       the metadata of the inventory
+     */
     public static void syncInventory(Inventory inventory, JsonObject invData) {
         for (int i = 0; i < inventory.getSize(); i++) {
             if (invData.has("slot" + i)) {

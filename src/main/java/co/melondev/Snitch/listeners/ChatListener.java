@@ -5,6 +5,7 @@ import co.melondev.Snitch.entities.SnitchPlayer;
 import co.melondev.Snitch.entities.SnitchPosition;
 import co.melondev.Snitch.entities.SnitchWorld;
 import co.melondev.Snitch.enums.EnumAction;
+import co.melondev.Snitch.util.SnitchDatabaseException;
 import com.google.gson.JsonObject;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -14,8 +15,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-
-import java.sql.SQLException;
 
 /**
  * Created by Devon on 7/16/18.
@@ -44,7 +43,7 @@ public class ChatListener implements Listener {
                     d.addProperty("message", ChatColor.stripColor(message));
                 }
                 i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
-            } catch (SQLException ex) {
+            } catch (SnitchDatabaseException ex) {
                 ex.printStackTrace();
             }
         });

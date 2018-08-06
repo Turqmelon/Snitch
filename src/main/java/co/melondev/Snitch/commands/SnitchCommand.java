@@ -3,11 +3,11 @@ package co.melondev.Snitch.commands;
 import co.melondev.Snitch.SnitchPlugin;
 import co.melondev.Snitch.enums.EnumSnitchCommand;
 import co.melondev.Snitch.util.MsgUtil;
+import co.melondev.Snitch.util.SnitchDatabaseException;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -70,7 +70,7 @@ public class SnitchCommand implements CommandExecutor {
                                 List<String> a = new ArrayList<>();
                                 a.addAll(Arrays.asList(args).subList(1, args.length));
 
-                                // onwar dto processing!
+                                // onward to processing!
                                 c.run(sender, a);
 
                             } else {
@@ -86,7 +86,7 @@ public class SnitchCommand implements CommandExecutor {
                 // Default error handling. Any command errors will through an IAE.
             } catch (IllegalArgumentException ex) {
                 sender.sendMessage(MsgUtil.error(ex.getMessage()));
-            } catch (SQLException e) {
+            } catch (SnitchDatabaseException e) {
                 // Database errors. We don't want to display the problem publicly so we instead log it to console.
                 sender.sendMessage(MsgUtil.error("Internal database error. Check console for details."));
                 e.printStackTrace();

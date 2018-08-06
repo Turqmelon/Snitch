@@ -22,13 +22,23 @@ import java.util.UUID;
  */
 public class BlockUtil {
 
+    /**
+     * Updates a physical block to match the provided metadata
+     *
+     * @param block     the block to update
+     * @param blockData the metadata
+     * @throws MojangsonParseException if there's an issue parsing item data
+     */
     public static void rebuildBlock(Block block, JsonObject blockData) throws MojangsonParseException {
+
+        // Start by updating the physical block
         block.setTypeIdAndData(Material.valueOf(blockData.get("type").getAsString()).getId(),
                 blockData.get("data").getAsByte(), false);
         BlockState bs = block.getState();
         bs.update();
         bs = block.getState();
 
+        // If we have a banner, update the color, and any patterns
         if ((bs instanceof Banner)) {
             ((Banner) bs).setBaseColor(DyeColor.valueOf(blockData.get("baseColor").getAsString()));
             JsonArray patterns = blockData.getAsJsonArray("patterns");
@@ -39,6 +49,8 @@ public class BlockUtil {
                 ((Banner) bs).addPattern(new Pattern(color, type));
             }
         }
+
+        // If we have a beacon, ensure the effects match what they should
         if ((bs instanceof Beacon)) {
             JsonElement primary = blockData.get("primaryEffect");
             JsonElement secondary = blockData.get("secondaryEffect");
@@ -49,13 +61,16 @@ public class BlockUtil {
                 ((Beacon) bs).setSecondaryEffect(PotionEffectType.getByName(secondary.getAsString()));
             }
         }
+        // If the block can be colored, ensure it matches
         if ((bs instanceof Colorable)) {
             ((Colorable) bs).setColor(DyeColor.valueOf(blockData.get("color").getAsString()));
         }
+        // If we have a brewing stand, set the stand values properly
         if ((bs instanceof BrewingStand)) {
             ((BrewingStand) bs).setBrewingTime(blockData.get("brewingTime").getAsInt());
             ((BrewingStand) bs).setFuelLevel(blockData.get("fuelLevel").getAsInt());
         }
+        // If this block is lockable, set it to match
         if ((bs instanceof Lockable)) {
             Lockable l = (Lockable) bs;
             JsonElement lock = blockData.get("locked");
@@ -63,11 +78,13 @@ public class BlockUtil {
                 l.setLock(lock.getAsString());
             }
         }
+        // If this was a command block, put the name and command back
         if ((bs instanceof CommandBlock)) {
             CommandBlock cb = (CommandBlock) bs;
             cb.setName(blockData.get("name").getAsString());
             cb.setCommand(blockData.get("command").getAsString());
         }
+        // If this was a spawner, ensure the values match
         if ((bs instanceof CreatureSpawner)) {
             CreatureSpawner cs = (CreatureSpawner) bs;
             cs.setSpawnRange(blockData.get("spawnRange").getAsInt());
@@ -79,6 +96,7 @@ public class BlockUtil {
             cs.setMaxNearbyEntities(blockData.get("maxNearby").getAsInt());
             cs.setDelay(blockData.get("delay").getAsInt());
         }
+        // If this block could be named, put the custom name back
         if ((bs instanceof Nameable)) {
             Nameable n = (Nameable) bs;
             JsonElement name = blockData.get("customName");
@@ -86,10 +104,12 @@ public class BlockUtil {
                 n.setCustomName(name.getAsString());
             }
         }
+        // If this portal goes anywhere specific, set that back
         if ((bs instanceof EndGateway)) {
             ((EndGateway) bs).setExactTeleport(blockData.get("exactTeleport").getAsBoolean());
             ((EndGateway) bs).setExitLocation(JsonUtil.fromJson(blockData.getAsJsonObject("exitLocation")));
         }
+        // Flowers are important
         if ((bs instanceof FlowerPot)) {
             JsonElement content = blockData.get("contents");
             if (!content.isJsonNull()) {
@@ -97,13 +117,16 @@ public class BlockUtil {
                 ((FlowerPot) bs).setContents(itemStack.getData());
             }
         }
+        // Match the cooking and burn times
         if ((bs instanceof Furnace)) {
             ((Furnace) bs).setCookTime(blockData.get("cookTime").getAsShort());
             ((Furnace) bs).setBurnTime(blockData.get("burnTime").getAsShort());
         }
+        // Music are important
         if ((bs instanceof NoteBlock)) {
             ((NoteBlock) bs).setRawNote(blockData.get("note").getAsByte());
         }
+        // Restore sign text
         if ((bs instanceof Sign)) {
             JsonArray signText = blockData.getAsJsonArray("text");
             int line = 0;
@@ -111,6 +134,7 @@ public class BlockUtil {
                 ((Sign) bs).setLine(line++, element.getAsString());
             }
         }
+        // Restore skull meta
         if ((bs instanceof Skull)) {
             ((Skull) bs).setSkullType(SkullType.valueOf(blockData.get("skullType").getAsString()));
             ((Skull) bs).setRotation(BlockFace.valueOf(blockData.get("rotation").getAsString()));
@@ -121,9 +145,18 @@ public class BlockUtil {
             }
         }
 
+        // We don't log inventory contents to the block break itself. This would be considered an ITEM REMOVAL, which is rolled back separately.
+
         bs.update();
     }
 
+    /**
+     * Remove any of the provided material types and replace them with air
+     * @param materialList      the list of materials to set to air
+     * @param location          the location  to remove around
+     * @param range             the range to remove
+     * @return a list of changed blocks
+     */
     public static List<AdjustedBlock> removeNear(List<Material> materialList, Location location, int range) {
         List<AdjustedBlock> changes = new ArrayList<>();
         Validate.notNull(location, "Location can't be null.");

@@ -1,14 +1,9 @@
 package co.melondev.Snitch.entities;
 
-import co.melondev.Snitch.SnitchPlugin;
 import co.melondev.Snitch.enums.EnumAction;
 import co.melondev.Snitch.enums.EnumActionVariables;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 
 /**
@@ -60,23 +55,6 @@ public class SnitchEntry {
         this.timestamp = timestamp;
         this.data = data;
         this.reverted = reverted;
-    }
-
-    /**
-     * Takes a {@link ResultSet} as returned from querying our logs table
-     *
-     * @param set the set of results for this roe
-     * @throws SQLException if there are any database errors thrown
-     */
-    public SnitchEntry(ResultSet set) throws SQLException {
-        this.id = set.getInt("id");
-        this.action = EnumAction.getById(set.getInt("action_id"));
-        this.snitchPlayer = SnitchPlugin.getInstance().getStorage().getPlayer(set.getInt("player_id"));
-        this.snitchWorld = SnitchPlugin.getInstance().getStorage().getWorld(set.getInt("world_id"));
-        this.snitchPosition = new SnitchPosition(set);
-        this.timestamp = set.getLong("timestamp");
-        this.data = new JsonParser().parse(set.getString("data")).getAsJsonObject();
-        this.reverted = set.getInt("is_reverted") == 1;
     }
 
     /**

@@ -6,6 +6,7 @@ import co.melondev.Snitch.entities.SnitchPosition;
 import co.melondev.Snitch.entities.SnitchWorld;
 import co.melondev.Snitch.enums.EnumAction;
 import co.melondev.Snitch.util.JsonUtil;
+import co.melondev.Snitch.util.SnitchDatabaseException;
 import com.google.gson.JsonObject;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -17,7 +18,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-import java.sql.SQLException;
 import java.util.UUID;
 
 /**
@@ -38,7 +38,7 @@ public class ConnectionListener implements Listener {
                 SnitchWorld world = i.getStorage().register(location.getWorld());
                 SnitchPosition position = new SnitchPosition(location);
                 i.getStorage().record(action, snitchPlayer, world, position, data, System.currentTimeMillis());
-            } catch (SQLException ex) {
+            } catch (SnitchDatabaseException ex) {
                 ex.printStackTrace();
             }
         });
@@ -81,7 +81,7 @@ public class ConnectionListener implements Listener {
         UUID uuid = event.getUniqueId();
         try {
             i.getStorage().registerPlayer(playerName, uuid);
-        } catch (SQLException e) {
+        } catch (SnitchDatabaseException e) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "Error creating your Snitch data!");
             e.printStackTrace();
         }

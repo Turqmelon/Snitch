@@ -7,6 +7,7 @@ import co.melondev.Snitch.entities.SnitchWorld;
 import co.melondev.Snitch.enums.EnumAction;
 import co.melondev.Snitch.enums.EnumDefaultPlayer;
 import co.melondev.Snitch.util.JsonUtil;
+import co.melondev.Snitch.util.SnitchDatabaseException;
 import com.google.gson.JsonObject;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -27,7 +28,6 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.Set;
 
@@ -75,7 +75,7 @@ public class InventoryListener implements Listener {
                     d.add("item", JsonUtil.jsonify(itemStack));
                 }
                 i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
-            } catch (SQLException ex) {
+            } catch (SnitchDatabaseException ex) {
                 ex.printStackTrace();
             }
         });
@@ -101,7 +101,7 @@ public class InventoryListener implements Listener {
                     d.add("item", JsonUtil.jsonify(itemStack));
                 }
                 i.getStorage().record(action, snitchPlayer, world, position, d, System.currentTimeMillis());
-            } catch (SQLException ex) {
+            } catch (SnitchDatabaseException ex) {
                 ex.printStackTrace();
             }
         });

@@ -2,10 +2,7 @@ package co.melondev.Snitch.entities;
 
 import co.melondev.Snitch.SnitchPlugin;
 import co.melondev.Snitch.enums.EnumSnitchActivity;
-import co.melondev.Snitch.util.AdjustedBlock;
-import co.melondev.Snitch.util.BlockUtil;
-import co.melondev.Snitch.util.MsgUtil;
-import co.melondev.Snitch.util.Previewable;
+import co.melondev.Snitch.util.*;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -13,7 +10,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -186,7 +182,7 @@ public class SnitchPreview implements Previewable {
                                         SnitchPlugin.getInstance().async(() -> {
                                             try {
                                                 SnitchPlugin.getInstance().getStorage().markReverted(entry, true);
-                                            } catch (SQLException e) {
+                                            } catch (SnitchDatabaseException e) {
                                                 e.printStackTrace();
                                             }
                                         });
@@ -194,7 +190,7 @@ public class SnitchPreview implements Previewable {
                                         SnitchPlugin.getInstance().async(() -> {
                                             try {
                                                 SnitchPlugin.getInstance().getStorage().markReverted(entry, false);
-                                            } catch (SQLException e) {
+                                            } catch (SnitchDatabaseException e) {
                                                 e.printStackTrace();
                                             }
                                         });

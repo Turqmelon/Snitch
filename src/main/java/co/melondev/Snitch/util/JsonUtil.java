@@ -17,12 +17,23 @@ import java.util.Map;
 
 public class JsonUtil {
 
+    /**
+     * Transforms a dye color into a usable dye object
+     *
+     * @param dye the dye color
+     * @return the dye as json
+     */
     public static JsonObject jsonify(DyeColor dye){
         JsonObject obj = new JsonObject();
         obj.addProperty("type", dye.name());
         return obj;
     }
 
+    /**
+     * Transforms entity properties into JSON
+     * @param entity        the entity to save
+     * @return the properties of the entity
+     */
     public static JsonObject jsonify(Entity entity){
 
         JsonObject obj = new JsonObject();
@@ -234,6 +245,11 @@ public class JsonUtil {
 
     }
 
+    /**
+     * Transforms an angle into JSON
+     * @param angle     the angle to save
+     * @return the json
+     */
     public static JsonObject jsonify(EulerAngle angle){
         JsonObject obj = new JsonObject();
         obj.addProperty("x", angle.getX());
@@ -242,13 +258,17 @@ public class JsonUtil {
         return obj;
     }
 
+    /**
+     * Transforms a tamer into json
+     * @param tamer     the tamer to save
+     * @return the json
+     */
     public static JsonObject jsonify(AnimalTamer tamer){
         JsonObject obj = new JsonObject();
         obj.addProperty("name", tamer.getName());
         obj.addProperty("uuid", tamer.getUniqueId().toString());
         return obj;
     }
-
     public static JsonObject jsonify(Map<Enchantment, Integer> enchants){
 
         JsonObject obj = new JsonObject();
