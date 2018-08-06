@@ -24,6 +24,8 @@ public interface StorageMethod {
 
     SnitchEntry record(EnumAction action, SnitchPlayer player, SnitchWorld world, SnitchPosition position, JsonObject data, long time) throws SnitchDatabaseException;
 
+    int deleteEntries(SnitchQuery query) throws SnitchDatabaseException;
+
     ImmutableList<SnitchEntry> performLookup(SnitchQuery query) throws SnitchDatabaseException;
 
     SnitchPlayer getPlayer(int playerID) throws SnitchDatabaseException;

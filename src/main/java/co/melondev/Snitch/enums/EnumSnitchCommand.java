@@ -115,6 +115,43 @@ public enum EnumSnitchCommand {
             }
         }
     },
+    DELETE(Arrays.asList("delete", "del"), "<params>", "Delete logged records", "snitch.delete") {
+        @Override
+        public void run(CommandSender sender, List<String> args) throws SnitchDatabaseException {
+            if ((sender instanceof Player)) {
+                Player player = (Player) sender;
+                if (args.contains("confirm")) {
+
+                    SnitchSession session = SnitchPlugin.getInstance().getPlayerManager().getSession(player);
+                    if (session != null && !session.getEntries().isEmpty()) {
+                        int deleted = SnitchPlugin.getInstance().getStorage().deleteEntries(session.getQuery());
+                        player.sendMessage(MsgUtil.success("Successfully deleted " + deleted + " entries."));
+                        player.sendMessage(MsgUtil.record("It's like they were never there."));
+                        session.getEntries().clear();
+                        return;
+                    } else {
+                        sender.sendMessage(MsgUtil.error("There are no entries to delete. Use \"/snitch delete <params>\", first."));
+                        return;
+                    }
+                }
+                SnitchQuery query = new SnitchQuery();
+                query.parseParams(player, args);
+                List<SnitchEntry> entryList = SnitchPlugin.getInstance().getStorage().performLookup(query);
+                if (entryList.isEmpty()) {
+                    sender.sendMessage(MsgUtil.error("No items to delete: " + query.getSearchSummary()));
+                    return;
+                }
+                EnumSnitchCommand.getOrCreateSession(player, query, entryList, 1);
+                MsgUtil.sendRecords(sender, query, entryList, 1, 7);
+                player.sendMessage(MsgUtil.info("Pending delete: " + query.getSearchSummary()));
+                player.sendMessage(MsgUtil.record("§cThis will delete §l" + entryList.size() + "§c records FOREVER!"));
+                player.sendMessage(MsgUtil.record("To confirm, use §f/snitch del confirm§7."));
+            } else {
+                sender.sendMessage(MsgUtil.error("You must be a player to use the delete command."));
+            }
+
+        }
+    },
     /**
      * Runs a {@link SnitchPreview} using the provided {@link SnitchQuery}
      */

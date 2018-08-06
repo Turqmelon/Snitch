@@ -60,7 +60,11 @@ public class MySQLStorage implements StorageMethod {
     }
 
     private String buildLookupQuery(SnitchQuery query) {
-        StringBuilder q = new StringBuilder("SELECT * FROM " + tble("logs") + " WHERE ");
+        return buildLookupQuery(query, false);
+    }
+
+    private String buildLookupQuery(SnitchQuery query, boolean delete) {
+        StringBuilder q = new StringBuilder((delete ? "DELETE FROM" : "SELECT * FROM") + " " + tble("logs") + " WHERE ");
         StringBuilder conditions = new StringBuilder();
         if (!query.getPlayers().isEmpty()) {
             List<SnitchPlayer> players = query.getPlayers();
@@ -350,6 +354,16 @@ public class MySQLStorage implements StorageMethod {
             throw new SnitchDatabaseException(ex);
         }
         return null;
+    }
+
+    @Override
+    public int deleteEntries(SnitchQuery query) throws SnitchDatabaseException {
+        String sql = buildLookupQuery(query, true);
+        try (Connection conn = getConnection(); PreparedStatement del = conn.prepareStatement(sql)) {
+            return del.executeUpdate();
+        } catch (SQLException ex) {
+            throw new SnitchDatabaseException(ex);
+        }
     }
 
     @Override
