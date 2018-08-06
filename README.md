@@ -37,6 +37,7 @@ Commands in Snitch are super easy to get the hang of. We'll cover the basics, fi
 * `/snitch preview|pv <params>` provides a player-only preview of a rollback, making it simple to preview your changes before they happen
 * `/snitch lookup|l <params>` performs a lookup using the specified parameters
 * `/snitch near [radius]` is a shortcut for typing `/snitch l area 5`. Enter a different radius to search nearby within that radius
+* `/snitch delete|del <params>` deletes records from the Snitch database
 * `/snitch teleport|tp <#>` teleport to a record from a lookup. You can also just click on the record in your chat.
 * `/snitch inspector|i` toggle the inspector.
 * `/snitch next|prev` change pages in a lookup
@@ -123,6 +124,43 @@ We can also do this if we don't want to travel directly to the area, if we know 
 `/snitch restore player SomeBaddie area 20 relative 100 150 100`
 
 It's like the rollback never happened there!
+
+## Deleting Unnecessary Records
+
+### Auto-Clean
+In the Snitch configuration, you can turn on **Auto-Clean** to automatically purge your server of old records each time your server starts up. It's important to have proper autoclean rules defined to keep Snitch running as fast and efficiently as possible.
+
+By default, Snitch will delete all records older then 1 year, and water/lava flow data older than 7 days.
+
+The configuration looks something like this:
+
+```yml
+autoclean:
+  enable: true
+  actions:
+  - 'before 365d'
+  - 'actions flow before 7d'
+```
+
+Auto-Clean actions use the same parameters that you use for lookups and rollbacks. Simply specify the filters for the data you'd like to delete. You can even limit the amount of data deleted per task by specifying `limit x` next to any of your clean tasks.
+
+### Manually
+
+You can also delete data yourself in-game using the `/snitch delete` command. 
+
+Say I wanted to delete ALL history of liquid flowing COMPLETELY. I can do that with the simple command: `/snitch delete a flow`.
+
+Snitch will do a quick check on how many records this will affect and make sure I know what I'm doing:
+![Manual Delete](https://d3vv6lp55qjaqc.cloudfront.net/items/391n2I3Q0q1A1W3r1v01/Screen%20Shot%202018-08-06%20at%207.30.06%20PM.png?X-CloudApp-Visitor-Id=1484866&v=b7f67583)
+
+You can see that even with the dangerous command I typed, Snitch auto-completed to only delete flow records for the past 3 days. (This is the default time search as specified in the `config.yml`). I can override this by specifying `since` myself, but I'll leave it as the 3 day default.
+
+If I'm sure, I just type `/snitch delete confirm` and the matching records will be deleted.
+
+![Delete Success](https://d3vv6lp55qjaqc.cloudfront.net/items/0o0i0C0t3t3N2H1X0c2l/Screen%20Shot%202018-08-06%20at%207.31.40%20PM.png?X-CloudApp-Visitor-Id=1484866&v=c4ed3b94)
+
+**IMPORTANT:** The `/snitch delete` command performs a TRUE delete. There is no way to recover the data that was removed using it, so it's important to only give this command to users you trust to not do your server harm.
+
 
 ---
 # Actions
