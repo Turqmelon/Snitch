@@ -359,14 +359,19 @@ public class MySQLStorage implements StorageMethod {
         try (Connection conn = getConnection(); PreparedStatement sel = conn.prepareStatement(sql)) {
             try (ResultSet set = sel.executeQuery()) {
                 while (set.next()) {
-                    results.add(new SnitchEntry(set.getInt("id"),
-                            EnumAction.getById(set.getInt("action_id")),
-                            getPlayer(set.getInt("player_id")),
-                            getWorld(set.getInt("world_id")),
-                            new SnitchPosition(set.getInt("pos_x"), set.getInt("pos_y"), set.getInt("pos_z")),
-                            set.getLong("timestamp"),
-                            new JsonParser().parse("data").getAsJsonObject(),
-                            set.getInt("is_reverted") == 1));
+                    try {
+                        results.add(new SnitchEntry(set.getInt("id"),
+                                EnumAction.getById(set.getInt("action_id")),
+                                getPlayer(set.getInt("player_id")),
+                                getWorld(set.getInt("world_id")),
+                                new SnitchPosition(set.getInt("pos_x"), set.getInt("pos_y"), set.getInt("pos_z")),
+                                set.getLong("timestamp"),
+                                new JsonParser().parse(set.getString("data")).getAsJsonObject(),
+                                set.getInt("is_reverted") == 1));
+                    } catch (IllegalStateException ex) {
+                        SnitchPlugin.getInstance().getLogger().severe("Error while retrieving log entry #" + set.getInt("id") + ": " + ex.getMessage());
+                        ex.printStackTrace();
+                    }
                 }
             }
         } catch (SQLException ex) {
