@@ -219,6 +219,8 @@ public class SnitchPreview implements Previewable {
                     }
                 }
             }.runTaskTimer(SnitchPlugin.getInstance(), 1L, 1L);
+        } else {
+            session.getPlayer().sendMessage(MsgUtil.error("No changes found matching your search: " + session.getQuery().getSearchSummary().toLowerCase()));
         }
     }
 
