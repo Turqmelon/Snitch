@@ -239,7 +239,7 @@ public enum EnumSnitchCommand {
                                 SnitchEntry entry = session.getEntries().get(id);
                                 Location loc = entry.getSnitchPosition().toLocation(entry.getSnitchWorld().getBukkitWorld());
                                 ((Player) sender).teleport(loc);
-                                sender.sendMessage(MsgUtil.success("Teleported to entry #" + id + ": §7" + entry.getDescriptor()));
+                                sender.sendMessage(MsgUtil.success("Teleported to entry #" + id + ": §7" + entry.getDescriptor(sender)));
                             } else {
                                 sender.sendMessage(MsgUtil.error("No entry found matching that ID."));
                             }

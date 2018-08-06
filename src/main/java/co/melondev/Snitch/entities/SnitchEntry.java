@@ -4,6 +4,7 @@ import co.melondev.Snitch.enums.EnumAction;
 import co.melondev.Snitch.enums.EnumActionVariables;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.bukkit.command.CommandSender;
 
 
 /**
@@ -69,7 +70,7 @@ public class SnitchEntry {
      * Gets a short explanation of what happened, replacing any necessary variables
      * @return a formatted, color coded, accurate description of the event that took place
      */
-    public String getDescriptor() {
+    public String getDescriptor(CommandSender sender) {
         String base = getAction().getExplained();
         String crossout = isReverted() ? "§m" : "";
 
@@ -77,11 +78,15 @@ public class SnitchEntry {
 
         for(EnumActionVariables var : EnumActionVariables.values()){
             if (data.has(var.getKey())){
-                JsonElement e = data.get(var.getKey());
-                if (e.isJsonObject()) {
-                    base = base.replace("%" + var.getKey(), "§6" + crossout + var.getReplacement(e.getAsJsonObject()) + "§7" + crossout);
+                if (var.shouldRedactDetailsFor(sender)) {
+                    base = base.replace("%" + var.getKey(), "§c" + crossout + "[PRIVATE]§7" + crossout);
                 } else {
-                    base = base.replace("%" + var.getKey(), "§6" + crossout + var.getReplacement(data.getAsJsonObject()) + "§7" + crossout);
+                    JsonElement e = data.get(var.getKey());
+                    if (e.isJsonObject()) {
+                        base = base.replace("%" + var.getKey(), "§6" + crossout + var.getReplacement(e.getAsJsonObject()) + "§7" + crossout);
+                    } else {
+                        base = base.replace("%" + var.getKey(), "§6" + crossout + var.getReplacement(data.getAsJsonObject()) + "§7" + crossout);
+                    }
                 }
             }
         }

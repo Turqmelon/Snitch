@@ -33,7 +33,7 @@ public class MsgUtil {
             for (int i = start; i < end; i++) {
                 if (i < entries.size()) {
                     SnitchEntry entry = entries.get(i);
-                    String d = entry.getDescriptor();
+                    String d = entry.getDescriptor(sender);
 
                     String timestamp;
                     if (System.currentTimeMillis() - entry.getTimestamp() > TimeUnit.DAYS.toMillis(1)) {

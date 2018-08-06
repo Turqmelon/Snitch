@@ -8,6 +8,7 @@ import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
@@ -22,7 +23,7 @@ import java.util.Map;
 public enum EnumActionVariables {
 
 
-    BLOCK("block"){
+    BLOCK("block", false) {
         @Override
         public String getReplacement(JsonObject obj) {
             String type = obj.get("type").getAsString();
@@ -36,7 +37,7 @@ public enum EnumActionVariables {
             }
         }
     },
-    DYE("dye") {
+    DYE("dye", false) {
         @Override
         public String getReplacement(JsonObject obj) {
             DyeColor color = DyeColor.valueOf(obj.get("type").getAsString());
@@ -96,7 +97,7 @@ public enum EnumActionVariables {
             return chatColor + WordUtils.capitalizeFully(color.name().replace("_", " ")) + "§7";
         }
     },
-    ENCHANTS("enchants") {
+    ENCHANTS("enchants", false) {
         @Override
         public String getReplacement(JsonObject obj) {
             List<String> names = new ArrayList<>();
@@ -110,19 +111,19 @@ public enum EnumActionVariables {
         }
     },
 
-    SOURCE_BLOCK("source"){
+    SOURCE_BLOCK("source", false) {
         @Override
         public String getReplacement(JsonObject obj) {
             return BLOCK.getReplacement(obj);
         }
     },
-    BUCKET("bucket"){
+    BUCKET("bucket", false) {
         @Override
         public String getReplacement(JsonObject obj) {
             return obj.get("type").getAsString().toLowerCase().replace("_", " ");
         }
     },
-    ITEM("item") {
+    ITEM("item", false) {
         @Override
         public String getReplacement(JsonObject obj) {
             try {
@@ -134,25 +135,25 @@ public enum EnumActionVariables {
             }
         }
     },
-    ENTITY("entity") {
+    ENTITY("entity", false) {
         @Override
         public String getReplacement(JsonObject obj) {
             return obj.get("entityType").getAsString().replace("_", " ").toLowerCase();
         }
     },
-    MESSAGE("message") {
+    MESSAGE("message", false) {
         @Override
         public String getReplacement(JsonObject obj) {
             return obj.get("message").getAsString();
         }
     },
-    CAUSE("cause") {
+    CAUSE("cause", false) {
         @Override
         public String getReplacement(JsonObject obj) {
             return obj.get("cause").getAsString().replace("_", " ").toLowerCase();
         }
     },
-    LOCATION("location") {
+    LOCATION("location", false) {
         @Override
         public String getReplacement(JsonObject obj) {
             String world = obj.get("world").getAsString();
@@ -163,37 +164,37 @@ public enum EnumActionVariables {
             return df.format(x) + "x " + df.format(y) + "y " + df.format(z) + "z in " + world;
         }
     },
-    IP("ip") {
+    IP("ip", true) {
         @Override
         public String getReplacement(JsonObject obj) {
             return obj.get("ip").getAsString();
         }
     },
-    SPAWNEGG("spawnegg"){
+    SPAWNEGG("spawnegg", false) {
         @Override
         public String getReplacement(JsonObject obj) {
             return obj.get("type").getAsString();
         }
     },
-    VEHICLE("vehicle"){
+    VEHICLE("vehicle", false) {
         @Override
         public String getReplacement(JsonObject obj) {
             return obj.get("type").getAsString();
         }
     },
-    XP("xp"){
+    XP("xp", false) {
         @Override
         public String getReplacement(JsonObject obj) {
             return obj.get("amount").getAsInt() + "";
         }
     },
-    SLOT("slot") {
+    SLOT("slot", false) {
         @Override
         public String getReplacement(JsonObject obj) {
             return obj.get("slot").getAsString().toLowerCase();
         }
     },
-    OLDSIGNTEXT("old") {
+    OLDSIGNTEXT("old", false) {
         @Override
         public String getReplacement(JsonObject obj) {
             List<String> lines = new ArrayList<>();
@@ -204,7 +205,7 @@ public enum EnumActionVariables {
             return String.join(", ", lines);
         }
     },
-    NEWSIGNTEXT("new") {
+    NEWSIGNTEXT("new", false) {
         @Override
         public String getReplacement(JsonObject obj) {
             List<String> lines = new ArrayList<>();
@@ -220,9 +221,19 @@ public enum EnumActionVariables {
      * The key to replace in {@link EnumAction#getExplained()}
      */
     private String key;
+    private boolean requirePermission;
 
-    EnumActionVariables(String key) {
+    EnumActionVariables(String key, boolean requirePermission) {
         this.key = key;
+        this.requirePermission = requirePermission;
+    }
+
+    public boolean shouldRedactDetailsFor(CommandSender sender) {
+        return isRequirePermission() && !sender.hasPermission("snitch.viewdata." + getKey().toLowerCase());
+    }
+
+    public boolean isRequirePermission() {
+        return requirePermission;
     }
 
     /**
